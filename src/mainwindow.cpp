@@ -350,6 +350,7 @@ void MainWindow::update()
     vanishlabel->setVisible(configwidget->vanishing());
     noiselabel->setVisible(configwidget->noise());
     cursorlabel->setText(QString("Cursor: [X=%1;Y=%2;Z=%3]").arg(dRealToStr(glwidget->ssl->cursor_x)).arg(dRealToStr(glwidget->ssl->cursor_y)).arg(dRealToStr(glwidget->ssl->cursor_z)));
+    // logStatus(QString("%1 - %2\n").arg(glwidget->ssl->goals_blue).arg(glwidget->ssl->goals_yellow),QColor("green"));
     statusWidget->update();
 }
 

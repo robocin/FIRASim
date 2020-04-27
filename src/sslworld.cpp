@@ -427,14 +427,17 @@ void SSLWorld::step(dReal dt)
 {
     if (!isGLEnabled) g->disableGraphics();
     else g->enableGraphics();
-
     if (customDT > 0)
         dt = customDT;
+    
     const auto ratio = m_parent->devicePixelRatio();
     g->initScene(m_parent->width()*ratio,m_parent->height()*ratio,0,0.7,1);
+    // Pq ele faz isso 5 vezes?
+    // - Talvez mais precisao (Ele sempre faz um step de dt*0.2 )
     for (int kk=0;kk<5;kk++)
     {
         const dReal* ballvel = dBodyGetLinearVel(ball->body);
+        // Norma do vetor velocidade da bola
         dReal ballspeed = ballvel[0]*ballvel[0] + ballvel[1]*ballvel[1] + ballvel[2]*ballvel[2];
         ballspeed = sqrt(ballspeed);
         dReal ballfx=0,ballfy=0,ballfz=0;
@@ -445,6 +448,7 @@ void SSLWorld::step(dReal dt)
             //TODO: what was supposed to be here?
         }
         else {
+            // Velocidade real  normalizada (com atrito envolvido) da bola
             dReal fk = cfg->BallFriction()*cfg->BallMass()*cfg->Gravity();
             ballfx = -fk*ballvel[0] / ballspeed;
             ballfy = -fk*ballvel[1] / ballspeed;
@@ -523,8 +527,8 @@ void SSLWorld::step(dReal dt)
 
     g->finalizeScene();
 
-
     sendVisionBuffer();
+    posProcess();
     frame_num ++;
 }
 
@@ -647,6 +651,23 @@ void SSLWorld::sendVisionBuffer()
         visionServer->send(*packet);
         delete packet;
         if (sendQueue.isEmpty()) break;
+    }
+}
+
+void SSLWorld::posProcess()
+{
+    bool is_goal = false;
+    dReal bx,by,bz;
+    ball->getBodyPosition(bx,by,bz);
+    if (bx > 0.75 && abs(by) < 0.4)
+    {
+        goals_blue++;
+        is_goal = true;
+    }
+    else if(bx < -0.75 && abs(by) < 0.4)
+    {
+        goals_yellow++;
+        is_goal = true;
     }
 }
 

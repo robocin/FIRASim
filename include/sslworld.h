@@ -62,11 +62,14 @@ private:
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
 public:    
     dReal customDT;
+    int goals_yellow = 0;
+    int goals_blue = 0;
     bool isGLEnabled;
     SSLWorld(QGLWidget* parent, ConfigWidget* _cfg, RobotsFormation *form);
     ~SSLWorld() override;
     void glinit();
     void step(dReal dt=-1);
+    void posProcess();
     fira_message::sim_to_ref::Environment* generatePacket();
     void sendVisionBuffer();
     int  robotIndex(unsigned int robot, int team);
