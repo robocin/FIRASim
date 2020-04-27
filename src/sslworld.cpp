@@ -22,6 +22,8 @@ Copyright (C) 2011, Parsian Robotic Center (eew.aut.ac.ir/~parsian/grsim)
 #include <QtNetwork>
 
 #include <QDebug>
+#include <cstdlib>
+#include <ctime>
 
 #include "logger.h"
 
@@ -262,11 +264,12 @@ SSLWorld::SSLWorld(QGLWidget* parent, ConfigWidget* _cfg, RobotsFormation *form)
             y = -form->y[k - cfg->Robots_Count()];
             dir = -1;
         }
+        bool turn_on = (k%cfg->Robots_Count() < 3) ? true:false;
         robots[k] = new CRobot(
                 p,ball,cfg,
                 x,y,ROBOT_START_Z(cfg),
                 ROBOT_GRAY,ROBOT_GRAY,ROBOT_GRAY,
-                k + 1,wheeltexid,dir);
+                k + 1,wheeltexid,dir, turn_on);
     }
 
     p->initAllObjects();
@@ -656,6 +659,7 @@ void SSLWorld::sendVisionBuffer()
 
 void SSLWorld::posProcess()
 {
+    srand (static_cast <unsigned> (time(0)));
     bool is_goal = false;
     dReal bx,by,bz;
     ball->getBodyPosition(bx,by,bz);
@@ -668,6 +672,25 @@ void SSLWorld::posProcess()
     {
         goals_yellow++;
         is_goal = true;
+    }
+
+    if(is_goal)
+    {
+        float LO_X = -0.75;
+        float LO_Y = -0.65;
+        float HI_X = 0.75;
+        float HI_Y = 0.65;
+        float x = LO_X + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(HI_X-LO_X)));
+        float y = LO_Y + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(HI_Y-LO_Y)));
+        ball->setBodyPosition(x, y, 0);
+        for(uint32_t i = 0; i < cfg->Robots_Count()*2; i++) {
+            x = LO_X + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(HI_X-LO_X)));
+            y = LO_Y + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(HI_Y-LO_Y)));
+            if (!cfg->vanishing() || (rand0_1() > cfg->blue_team_vanishing())){
+                if (!robots[i]->on) continue;
+                robots[i]->setXY(x, y);
+            }
+        }
     }
 }
 

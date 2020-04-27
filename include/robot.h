@@ -27,7 +27,6 @@ Copyright (C) 2011, Parsian Robotic Center (eew.aut.ac.ir/~parsian/grsim)
 
 #define ROBOT_GRAY 0.4
 
-
 enum KickStatus
 {
     NO_KICK = 0,
@@ -37,73 +36,73 @@ enum KickStatus
 
 class CRobot
 {
-    PWorld* w;
-    PBall* m_ball;
-    dReal m_x,m_y,m_z;
-    dReal m_r,m_g,m_b;
+    PWorld *w;
+    PBall *m_ball;
+    dReal m_x, m_y, m_z;
+    dReal m_r, m_g, m_b;
     dReal m_dir;
     int m_rob_id;
     bool firsttime;
     bool last_state{};
-public:    
-    ConfigWidget* cfg;
+
+public:
+    ConfigWidget *cfg;
     dSpaceID space;
-    PObject* chassis;
-    PBox* dummy;
+    PObject *chassis;
+    PBox *dummy;
     dJointID dummy_to_chassis;
-    PBox* boxes[3]{};
+    PBox *boxes[3]{};
     bool on;
     //these values are not controled by this class
     bool selected{};
-    dReal select_x{},select_y{},select_z{};
-    QImage *img{},*number{};
+    dReal select_x{}, select_y{}, select_z{};
+    QImage *img{}, *number{};
     class Wheel
     {
-      public:
+    public:
         int id;
-        Wheel(CRobot* robot,int _id,dReal ang,dReal ang2,int wheeltexid);
+        Wheel(CRobot *robot, int _id, dReal ang, dReal ang2, int wheeltexid);
         void step();
         dJointID joint;
         dJointID motor;
-        PCylinder* cyl;
+        PCylinder *cyl;
         dReal speed;
-        CRobot* rob;
-    } *wheels[2]{};
+        CRobot *rob;
+    } * wheels[2]{};
 
     class RBall
     {
     public:
         int id;
-        RBall(CRobot* robot,int _id,dReal ang,dReal ang2);
+        RBall(CRobot *robot, int _id, dReal ang, dReal ang2);
         void step();
         dJointID joint;
-        PBall* pBall;
+        PBall *pBall;
         dReal speed;
-        CRobot* rob;
-    } *balls[2]{};
+        CRobot *rob;
+    } * balls[2]{};
 
-
-    CRobot(PWorld* world,PBall* ball,ConfigWidget* _cfg,dReal x,dReal y,dReal z,dReal r,dReal g,dReal b,int rob_id,int wheeltexid,int dir);
+    CRobot(PWorld *world, PBall *ball, ConfigWidget *_cfg, dReal x, dReal y, dReal z,
+           dReal r, dReal g, dReal b, int rob_id, int wheeltexid, int dir, bool turn_on);
     ~CRobot();
     void step();
     void drawLabel();
-    void setSpeed(int i,dReal s); //i = 0,1,2,3
+    void setSpeed(int i, dReal s); //i = 0,1,2,3
     void setSpeed(dReal vx, dReal vy, dReal vw);
     dReal getSpeed(int i);
-    void incSpeed(int i,dReal v);
+    void incSpeed(int i, dReal v);
     void resetSpeeds();
     void resetRobot();
-    void getXY(dReal& x,dReal& y);
+    void getXY(dReal &x, dReal &y);
     dReal getDir();
     dReal getDir(dReal &k);
-    void setXY(dReal x,dReal y);
+    void setXY(dReal x, dReal y);
     void setDir(dReal ang);
     int getID();
-    PBall* getBall();
-    PWorld* getWorld();
+    PBall *getBall();
+    PWorld *getWorld();
 };
 
-
-#define ROBOT_START_Z(cfg)  ((cfg)->robotSettings.RobotHeight*0.5 + (cfg)->robotSettings.WheelRadius*1 + (cfg)->robotSettings.BottomHeight)
+#define ROBOT_START_Z(cfg) ((cfg)->robotSettings.RobotHeight * 0.5 + (cfg)->robotSettings.WheelRadius * 1 + (cfg)->robotSettings.BottomHeight)
 
 #endif // ROBOT_H
