@@ -717,8 +717,9 @@ void SSLWorld::posProcess()
         goals_yellow++;
         is_goal = true;
     }
-
-    if (is_goal)
+    time_before = time_after;
+    time_after = timer->elapsed()/300000;
+    if (is_goal || time_after != time_before)
     {
         float LO_X = -0.65;
         float LO_Y = -0.55;
