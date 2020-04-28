@@ -794,6 +794,8 @@ void SSLWorld::posProcess()
         {
             timer->restart();
             time_before = time_after = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
         }
     }
 }
