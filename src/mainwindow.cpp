@@ -507,3 +507,8 @@ void MainWindow::setIsGlEnabled(bool value)
 {
   glwidget->ssl->isGLEnabled = value;
 }
+
+void MainWindow::withGoalKick(bool value)
+{
+    glwidget->ssl->withGoalKick = value;
+}

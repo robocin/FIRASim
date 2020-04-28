@@ -62,6 +62,7 @@ public slots:
     void reconnectVisionSocket();
     void recvActions();
     void setIsGlEnabled(bool value);
+    void withGoalKick(bool value);
 
     int robotIndex(int robot,int team);
 private:

@@ -40,5 +40,7 @@ int main(int argc, char *argv[])
         // Run normally
         w.show();
     }
+    if(std::find(argv, argend, std::string("--atkfault")) != argend)
+        w.withGoalKick(true);
     return QApplication::exec();
 }

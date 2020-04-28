@@ -774,6 +774,28 @@ void SSLWorld::posProcess()
         }
     }
 
+    // Atk Fault Detection
+    bool atk_fault = false;
+    if (bx > 0.6 && abs(by < 0.35) && withGoalKick)
+    {
+        bool one_in_pen_area = false;
+        for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
+        {
+            int num = robotIndex(i, 0);
+            if (!robots[num]->on)
+                continue;
+            dReal rx, ry;
+            robots[num]->getXY(rx, ry);
+            if (rx > 0.6 && abs(ry < 0.35))
+            {
+                if (one_in_pen_area)
+                    penalty = true;
+                else
+                    one_in_pen_area = true;
+            }
+        }
+    }
+
     // Fault Detection
     bool fault = false;
     if (timer_fault->elapsed() >= 10000)
@@ -800,7 +822,7 @@ void SSLWorld::posProcess()
     time_after = timer->elapsed() / 300000;
     bool end_time = time_after != time_before;
 
-    if (is_goal || penalty || fault || end_time)
+    if (is_goal || penalty || fault || atk_fault || end_time)
     {
         float LO_X = -0.65;
         float LO_Y = -0.55;
