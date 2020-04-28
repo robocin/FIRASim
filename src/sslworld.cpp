@@ -333,9 +333,9 @@ SSLWorld::SSLWorld(QGLWidget* parent, ConfigWidget* _cfg, RobotsFormation *form)
     timer->start();
     in_buffer = new char [65536];
     ball_speed_estimator = new speedEstimator(false, 0.95, 100000);
-    for(int i=0;i<cfg->Robots_Count;i++){
-        blue_speed_estimator[i] = new speedEstimator(true, 0.95, 100000);
-        yellow_speed_estimator[i] = new speedEstimator(true, 0.95, 100000);
+    for(int i=0;i<cfg->Robots_Count();i++){
+        blue_speed_estimator[i] = new speedEstimator(false, 0.95, 100000);
+        yellow_speed_estimator[i] = new speedEstimator(false, 0.95, 100000);
     }
 
     // initialize robot state
@@ -529,6 +529,7 @@ void SSLWorld::step(dReal dt)
     //for (int k=0;k<10;k++) robots[k]->drawLabel();
 
     g->finalizeScene();
+  
 
 
     sendVisionBuffer();
@@ -593,9 +594,19 @@ dReal normalizeAngle(dReal a)
 
 Environment* SSLWorld::generatePacket()
 {
+    int t = timer->elapsed();
     auto* env = new Environment;
     dReal x,y,z,dir,k;
-    ball->getBodyPosition(x,y,z);    
+    ball->getBodyPosition(x,y,z); 
+    //Calculate Speed   
+    dReal ball_pose[3];
+    ball_pose[0] = x;
+    ball_pose[1] = y;
+    ball_pose[2] = 0.0;
+    dReal ball_vel[3] = {0.0};
+    //printf("aqui\n");
+    ball_speed_estimator->estimateSpeed((double)(t), ball_pose, ball_vel);
+    //printf("%lf %lf \n", ball_vel[0], ball_vel[1]);
     dReal dev_x = cfg->noiseDeviation_x();
     dReal dev_y = cfg->noiseDeviation_y();
     dReal dev_a = cfg->noiseDeviation_angle();
@@ -611,6 +622,15 @@ Environment* SSLWorld::generatePacket()
         if (!cfg->vanishing() || (rand0_1() > cfg->blue_team_vanishing())){
             if (!robots[i]->on) continue;
             robots[i]->getXY(x,y);
+            dReal robot_pose[3];
+            robot_pose[0] = x;
+            robot_pose[1] = y;
+            robot_pose[2] = 0.0;
+            dReal robot_vel[3]={0.0};
+            if(i<cfg->Robots_Count()) {
+                blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
+                printf("%lf %lf \n", robot_vel[0], robot_vel[1]);
+            }
             dir = robots[i]->getDir(k);
             // reset when the robot has turned over
             if (cfg->ResetTurnOver() && k < 0.9) {

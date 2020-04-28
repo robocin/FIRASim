@@ -16,7 +16,7 @@ class speedEstimator
     
 public: 
 speedEstimator(bool t_have_angle, double t_beta, double t_acc_th);
-void estimateSpeed(int time, dReal *pose, dReal *vel); 
+void estimateSpeed(double time, dReal *pose, dReal *vel); 
 private:
 double prev_time;
 double prev_pos[3];

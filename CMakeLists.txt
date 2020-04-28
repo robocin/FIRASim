@@ -148,6 +148,7 @@ set(SOURCES
     src/net/robocup_ssl_client.cpp
     src/sslworld.cpp
     src/robot.cpp
+    src/speed_estimator.cpp
     src/configwidget.cpp
     src/statuswidget.cpp
     src/logger.cpp
@@ -171,6 +172,7 @@ set(HEADERS
     include/net/robocup_ssl_client.h
     include/sslworld.h
     include/robot.h
+    include/speed_estimator.h
     include/configwidget.h
     include/statuswidget.h
     include/logger.h
