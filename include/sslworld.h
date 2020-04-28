@@ -60,6 +60,8 @@ private:
     QList<SendingPacket*> sendQueue;
     char *in_buffer;
     bool lastInfraredState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
+    int time_before = 0;
+    int time_after = 0;
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
 public:    
     dReal customDT;
