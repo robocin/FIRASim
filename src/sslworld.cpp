@@ -744,6 +744,28 @@ void SSLWorld::posProcess()
             }
         }
     }
+	
+	//goal shot
+	bool gooal_shot = false;
+	if(bx > 0.6 && abs(by < 0.35))
+	{
+		bool one_in_enemy_area = false;
+        for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
+        {
+            int num = robotIndex(i, 0);
+            if (!robots[num]->on)
+                continue;
+            dReal rx, ry;
+            robots[num]->getXY(rx, ry);
+            if (rx > 0.6 && abs(ry < 0.35))
+            {
+                if (one_in_enemy_area)
+                    goal_shot = true;
+                else
+                    one_in_enemy_area = true;
+            }
+        }
+	}
 
     // Fault Detection
     bool fault = false;
@@ -771,7 +793,7 @@ void SSLWorld::posProcess()
     time_after = timer->elapsed() / 300000;
     bool end_time = time_after != time_before;
 
-    if (is_goal || penalty || fault || end_time)
+    if (is_goal || penalty || fault || end_time || goal_shot)
     {
         float LO_X = -0.65;
         float LO_Y = -0.55;
