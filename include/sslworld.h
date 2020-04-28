@@ -91,7 +91,8 @@ public:
     QUdpSocket *commandSocket{};
     bool updatedCursor;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
-    QElapsedTimer *timer;
+    QElapsedTimer *timer, *timer_fault;
+    std::pair<float, float> ball_prev_pos = std::pair<float, float>(0.0, 0.0);
 public slots:
     void recvActions();
 signals:

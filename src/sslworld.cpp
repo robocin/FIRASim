@@ -349,6 +349,10 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
     }
     timer = new QElapsedTimer();
     timer->start();
+
+    timer_fault = new QElapsedTimer();
+    timer_fault->start();
+
     in_buffer = new char[65536];
 
     // initialize robot state
@@ -707,22 +711,67 @@ void SSLWorld::posProcess()
     bool is_goal = false;
     dReal bx, by, bz;
     ball->getBodyPosition(bx, by, bz);
-    if (bx > 0.75 && abs(by) < 0.4)
+    // Goal Detection
+    if (bx > 0.75 && abs(by) < 0.2)
     {
         goals_blue++;
         is_goal = true;
     }
-    else if (bx < -0.75 && abs(by) < 0.4)
+    else if (bx < -0.75 && abs(by) < 0.2)
     {
         goals_yellow++;
         is_goal = true;
     }
-    // if(bx < -0.6 && abs(by < 0.35))
 
+    // Penalti Detection
+    bool penalty = false;
+    if (bx < -0.6 && abs(by < 0.35))
+    {
+        bool one_in_pen_area = false;
+        for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
+        {
+            int num = robotIndex(i, 0);
+            if (!robots[num]->on)
+                continue;
+            dReal rx, ry;
+            robots[num]->getXY(rx, ry);
+            if (rx < -0.6 && abs(ry < 0.35))
+            {
+                if (one_in_pen_area)
+                    penalty = true;
+                else
+                    one_in_pen_area = true;
+            }
+        }
+    }
+
+    // Fault Detection
+    bool fault = false;
+    if (timer_fault->elapsed() >= 10000)
+    {
+        if (ball_prev_pos.first == bx &&
+            ball_prev_pos.second == by)
+            fault = true;
+        ball_prev_pos.first = bx;
+        ball_prev_pos.second = by;
+    }
+    else
+    {
+        if (ball_prev_pos.first != bx ||
+            ball_prev_pos.second != by)
+        {
+            ball_prev_pos.first = bx;
+            ball_prev_pos.second = by;
+            timer_fault->restart();
+        }
+    }
+
+    // End Time Detection
     time_before = time_after;
-    time_after = timer->elapsed()/300000;
+    time_after = timer->elapsed() / 300000;
     bool end_time = time_after != time_before;
-    if (is_goal || end_time)
+
+    if (is_goal || penalty || fault || end_time)
     {
         float LO_X = -0.65;
         float LO_Y = -0.55;
@@ -740,8 +789,12 @@ void SSLWorld::posProcess()
                 continue;
             robots[i]->setXY(x, y);
         }
-        timer->restart();
-        time_before = time_after = 0;
+        timer_fault->restart();
+        if (end_time)
+        {
+            timer->restart();
+            time_before = time_after = 0;
+        }
     }
 }
 
