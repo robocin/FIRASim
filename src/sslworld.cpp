@@ -746,7 +746,7 @@ void SSLWorld::posProcess()
     }
 	
 	//goal shot
-	bool gooal_shot = false;
+	bool goal_shot = false;
 	if(bx > 0.6 && abs(by < 0.35))
 	{
 		bool one_in_enemy_area = false;
