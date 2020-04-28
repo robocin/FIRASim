@@ -1,6 +1,7 @@
 #include "include/speed_estimator.h"
 
 
+
 speedEstimator::speedEstimator(bool t_have_angle, double t_beta, double t_acc_th){
     this->prev_time =0;
     this->prev_pos[3] = {0.0};
@@ -19,6 +20,25 @@ speedEstimator::speedEstimator(bool t_have_angle, double t_beta, double t_acc_th
     this->corr_moving_avg_y=0.0;
     this->beta=t_beta;
 
+}
+double to_positive_angle(double angle){
+    return fmod(angle + 2 * M_PI, 2 * M_PI);
+}
+    
+
+double smallest_angle_diff(double target, double source){
+    double a = to_positive_angle(target) - to_positive_angle(source);
+
+    if (a > M_PI){
+        a = a - 2*M_PI;
+    }
+        
+    if (a < -M_PI){
+         a = a + 2 * M_PI;
+    }
+       
+
+    return a;
 }
 
 void speedEstimator::estimateSpeed(double time, dReal *pose, dReal *vel){
@@ -51,7 +71,7 @@ void speedEstimator::estimateSpeed(double time, dReal *pose, dReal *vel){
         double vel_y = (pose[1] - this->prev_pos[1]) / dt;
         double vel_yaw;
         if (this->have_angle){
-           //vel_yaw = -smallest_angle_diff(pose[2], self.prev_pos[2]) / dt; //Implementar depois essa função
+           vel_yaw = -smallest_angle_diff(pose[2], this->prev_pos[2]) / dt; 
         }
         //printf("vel x %f\n", vel_x);     
         double lin = sqrt(pow(vel_x, 2) + pow(vel_y, 2));

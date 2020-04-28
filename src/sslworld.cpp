@@ -334,8 +334,8 @@ SSLWorld::SSLWorld(QGLWidget* parent, ConfigWidget* _cfg, RobotsFormation *form)
     in_buffer = new char [65536];
     ball_speed_estimator = new speedEstimator(false, 0.95, 100000);
     for(int i=0;i<cfg->Robots_Count();i++){
-        blue_speed_estimator[i] = new speedEstimator(false, 0.95, 100000);
-        yellow_speed_estimator[i] = new speedEstimator(false, 0.95, 100000);
+        blue_speed_estimator[i] = new speedEstimator(true, 0.95, 100000);
+        yellow_speed_estimator[i] = new speedEstimator(true, 0.95, 100000);
     }
 
     // initialize robot state
@@ -622,16 +622,18 @@ Environment* SSLWorld::generatePacket()
         if (!cfg->vanishing() || (rand0_1() > cfg->blue_team_vanishing())){
             if (!robots[i]->on) continue;
             robots[i]->getXY(x,y);
+            dir = robots[i]->getDir(k);
             dReal robot_pose[3];
             robot_pose[0] = x;
             robot_pose[1] = y;
-            robot_pose[2] = 0.0;
+            robot_pose[2] = (normalizeAngle(dir)*M_PI/180.0);
             dReal robot_vel[3]={0.0};
             if(i<cfg->Robots_Count()) {
                 blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
-                printf("%lf %lf \n", robot_vel[0], robot_vel[1]);
+                printf("%lf %lf %lf\n", robot_vel[0], robot_vel[1], robot_vel[2]);
+            } else{
+                yellow_speed_estimator[i-cfg->Robots_Count()]->estimateSpeed((double) t, robot_pose, robot_vel);
             }
-            dir = robots[i]->getDir(k);
             // reset when the robot has turned over
             if (cfg->ResetTurnOver() && k < 0.9) {
                     robots[i]->resetRobot();

@@ -77,8 +77,8 @@ public:
     PWorld* p;
     PBall* ball;
     speedEstimator* ball_speed_estimator;
-    speedEstimator* blue_speed_estimator[MAX_ROBOT_COUNT];
-    speedEstimator* yellow_speed_estimator[MAX_ROBOT_COUNT];
+    speedEstimator* blue_speed_estimator [MAX_ROBOT_COUNT];
+    speedEstimator* yellow_speed_estimator [MAX_ROBOT_COUNT];
     PGround* ground;
     PRay* ray;
     PFixedBox* walls[WALL_COUNT]{};
