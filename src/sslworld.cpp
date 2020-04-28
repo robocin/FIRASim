@@ -748,9 +748,12 @@ void SSLWorld::posProcess()
         goals_yellow++;
         is_goal = true;
     }
+    // if(bx < -0.6 && abs(by < 0.35))
+
     time_before = time_after;
     time_after = timer->elapsed()/300000;
-    if (is_goal || time_after != time_before)
+    bool end_time = time_after != time_before;
+    if (is_goal || end_time)
     {
         float LO_X = -0.65;
         float LO_Y = -0.55;
@@ -768,6 +771,8 @@ void SSLWorld::posProcess()
                 continue;
             robots[i]->setXY(x, y);
         }
+        timer->restart();
+        time_before = time_after = 0;
     }
 }
 
