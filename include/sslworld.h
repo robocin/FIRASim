@@ -39,6 +39,7 @@ Copyright (C) 2011, Parsian Robotic Center (eew.aut.ac.ir/~parsian/grsim)
 #include "configwidget.h"
 
 #include "config.h"
+#include "speed_estimator.h"
 #define WALL_COUNT 16
 
 class RobotsFormation;
@@ -75,6 +76,9 @@ public:
     CGraphics* g;
     PWorld* p;
     PBall* ball;
+    speedEstimator* ball_speed_estimator;
+    speedEstimator** blue_speed_estimator;
+    speedEstimator** yellow_speed_estimator;
     PGround* ground;
     PRay* ray;
     PFixedBox* walls[WALL_COUNT]{};
