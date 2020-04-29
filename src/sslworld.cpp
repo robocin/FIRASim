@@ -661,6 +661,8 @@ Environment *SSLWorld::generatePacket()
         vball->set_x(randn_notrig(x, dev_x));
         vball->set_y(randn_notrig(y, dev_y));
         vball->set_z(z);
+        vball->set_vx(ball_vel[0]);
+        vball->set_vy(ball_vel[1]);
     }
     for (uint32_t i = 0; i < cfg->Robots_Count() * 2; i++)
     {
@@ -702,6 +704,9 @@ Environment *SSLWorld::generatePacket()
             rob->set_x(randn_notrig(x, dev_x));
             rob->set_y(randn_notrig(y, dev_y));
             rob->set_orientation(normalizeAngle(randn_notrig(dir, dev_a)) * M_PI / 180.0);
+            rob->set_vx(robot_vel[0]);
+            rob->set_vy(robot_vel[1]);
+            rob->set_vorientation(robot_vel[2]);
         }
     }
     fira_message::Field *field = env->mutable_field();
@@ -710,6 +715,8 @@ Environment *SSLWorld::generatePacket()
     field->set_goal_depth(cfg->Goal_Depth());
     field->set_goal_width(cfg->Goal_Width());
     env->set_step(timer->elapsed());
+    env->set_goals_blue(this->goals_blue);
+    env->set_goals_yellow(this->goals_yellow);
     return env;
 }
 
