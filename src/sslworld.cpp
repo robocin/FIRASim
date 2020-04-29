@@ -610,7 +610,6 @@ Environment* SSLWorld::generatePacket()
     dReal ball_vel[3] = {0.0};
     ball_speed_estimator->estimateSpeed((double)(t), ball_pose, ball_vel);
     //Ball speed stored in vall_vel. Remember that the sign for linear speed is changed.
-    //If reparameterize position here, it is not going to be necessary
     dReal dev_x = cfg->noiseDeviation_x();
     dReal dev_y = cfg->noiseDeviation_y();
     dReal dev_a = cfg->noiseDeviation_angle();
@@ -636,12 +635,11 @@ Environment* SSLWorld::generatePacket()
             dReal robot_vel[3]={0.0};
             if(i<cfg->Robots_Count()) {
                 blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
-                //printf("%lf %lf %lf\n", -robot_vel[0], -robot_vel[1], robot_vel[2]);
+                //printf("%lf %lf %lf %lf\n", robot_vel[0], robot_vel[1], robot_vel[2], (double)(t));
             } else{
                 yellow_speed_estimator[i-cfg->Robots_Count()]->estimateSpeed((double) t, robot_pose, robot_vel);
             }
             //Robot speed stored in robot_vel. Remember that the sign for linear speed is changed.
-            //If reparameterize position here, it is not going to be necessary
 
             // reset when the robot has turned over
             if (cfg->ResetTurnOver() && k < 0.9) {
