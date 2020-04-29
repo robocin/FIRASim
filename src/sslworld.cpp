@@ -44,6 +44,8 @@ dReal fric(dReal f)
     return f;
 }
 
+
+
 bool wheelCallBack(dGeomID o1,dGeomID o2,PSurface* s, int /*robots_count*/)
 {
     //s->id2 is ground
@@ -598,15 +600,17 @@ Environment* SSLWorld::generatePacket()
     auto* env = new Environment;
     dReal x,y,z,dir,k;
     ball->getBodyPosition(x,y,z); 
-    //Calculate Speed   
+    //Estimating Ball Speed  
+
+    //Ball Pose 
     dReal ball_pose[3];
     ball_pose[0] = x;
     ball_pose[1] = y;
-    ball_pose[2] = 0.0;
+    ball_pose[2] = 0.0; //Ball's Angle Not considered
     dReal ball_vel[3] = {0.0};
-    //printf("aqui\n");
     ball_speed_estimator->estimateSpeed((double)(t), ball_pose, ball_vel);
-    //printf("%lf %lf \n", ball_vel[0], ball_vel[1]);
+    //Ball speed stored in vall_vel. Remember that the sign for linear speed is changed.
+    //If reparameterize position here, it is not going to be necessary
     dReal dev_x = cfg->noiseDeviation_x();
     dReal dev_y = cfg->noiseDeviation_y();
     dReal dev_a = cfg->noiseDeviation_angle();
@@ -623,6 +627,8 @@ Environment* SSLWorld::generatePacket()
             if (!robots[i]->on) continue;
             robots[i]->getXY(x,y);
             dir = robots[i]->getDir(k);
+            //Estimating speeds for robots
+            //Robot Pose
             dReal robot_pose[3];
             robot_pose[0] = x;
             robot_pose[1] = y;
@@ -630,10 +636,13 @@ Environment* SSLWorld::generatePacket()
             dReal robot_vel[3]={0.0};
             if(i<cfg->Robots_Count()) {
                 blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
-                printf("%lf %lf %lf\n", robot_vel[0], robot_vel[1], robot_vel[2]);
+                //printf("%lf %lf %lf\n", -robot_vel[0], -robot_vel[1], robot_vel[2]);
             } else{
                 yellow_speed_estimator[i-cfg->Robots_Count()]->estimateSpeed((double) t, robot_pose, robot_vel);
             }
+            //Robot speed stored in robot_vel. Remember that the sign for linear speed is changed.
+            //If reparameterize position here, it is not going to be necessary
+
             // reset when the robot has turned over
             if (cfg->ResetTurnOver() && k < 0.9) {
                     robots[i]->resetRobot();
