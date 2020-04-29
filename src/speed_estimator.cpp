@@ -42,7 +42,6 @@ double smallest_angle_diff(double target, double source){
 }
 
 void speedEstimator::estimateSpeed(double time, dReal *pose, dReal *vel){
-    //printf("aqui\n");
     time = time / 1000;
     int scale = 1;
     if(this->prev_time==0 || (time - this->prev_time) == 0){
@@ -65,15 +64,13 @@ void speedEstimator::estimateSpeed(double time, dReal *pose, dReal *vel){
     else{
         
         double dt = (time - this->prev_time);
-        //printf("passou no tempo %f \n", dt);
         this->count_avg += 1;
         double vel_x = (pose[0] - this->prev_pos[0]) / dt;
         double vel_y = (pose[1] - this->prev_pos[1]) / dt;
         double vel_yaw;
         if (this->have_angle){
            vel_yaw = -smallest_angle_diff(pose[2], this->prev_pos[2]) / dt; 
-        }
-        //printf("vel x %f\n", vel_x);     
+        }   
         double lin = sqrt(pow(vel_x, 2) + pow(vel_y, 2));
         if(this->prev_lin != 0.0){
             if (abs(lin-this->prev_lin)/dt > this->acc_th){
@@ -95,7 +92,6 @@ void speedEstimator::estimateSpeed(double time, dReal *pose, dReal *vel){
             this->prev_pos[0] = pose[0];
             this->prev_pos[1] = pose[1];
             this->prev_pos[2] = pose[2];   
-            //this->prev_vel_y = vel_yaw;
         }
             
         else{

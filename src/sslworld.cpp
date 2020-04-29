@@ -635,7 +635,6 @@ Environment* SSLWorld::generatePacket()
             dReal robot_vel[3]={0.0};
             if(i<cfg->Robots_Count()) {
                 blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
-                //printf("%lf %lf %lf %lf\n", robot_vel[0], robot_vel[1], robot_vel[2], (double)(t));
             } else{
                 yellow_speed_estimator[i-cfg->Robots_Count()]->estimateSpeed((double) t, robot_pose, robot_vel);
             }
