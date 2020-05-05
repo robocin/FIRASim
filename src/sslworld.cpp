@@ -485,7 +485,10 @@ void SSLWorld::step(dReal dt)
         else
         {
             // Velocidade real  normalizada (com atrito envolvido) da bola
-            dReal fk = cfg->BallFriction() * cfg->BallMass() * cfg->Gravity();
+            dReal accel = last_speed - ballspeed;
+            accel = -accel / dt;
+            last_speed = ballspeed;
+            dReal fk = accel * cfg->BallFriction() * cfg->BallMass() * cfg->Gravity();
             ballfx = -fk * ballvel[0] / ballspeed;
             ballfy = -fk * ballvel[1] / ballspeed;
             ballfz = -fk * ballvel[2] / ballspeed;
@@ -637,7 +640,7 @@ dReal normalizeAngle(dReal a)
 
 Environment *SSLWorld::generatePacket()
 {
-    int t = timer->elapsed() * 20;
+    int t = timer->elapsed() * 9;
     auto *env = new Environment;
     dReal x, y, z, dir, k;
     ball->getBodyPosition(x, y, z);
@@ -722,7 +725,7 @@ Environment *SSLWorld::generatePacket()
     field->set_length(cfg->Field_Length());
     field->set_goal_depth(cfg->Goal_Depth());
     field->set_goal_width(cfg->Goal_Width());
-    env->set_step(timer->elapsed() * 20);
+    env->set_step(timer->elapsed() * 9);
     env->set_goals_blue(this->goals_blue);
     env->set_goals_yellow(this->goals_yellow);
     return env;
@@ -736,7 +739,7 @@ SendingPacket::SendingPacket(fira_message::sim_to_ref::Environment *_packet, int
 
 void SSLWorld::sendVisionBuffer()
 {
-    int t = timer->elapsed() * 20;
+    int t = timer->elapsed() * 9;
     sendQueue.push_back(new SendingPacket(generatePacket(), t));
     while (t - sendQueue.front()->t >= cfg->sendDelay())
     {
@@ -871,7 +874,7 @@ void SSLWorld::posProcess()
 
     // Fault Detection
     bool fault = false;
-    if (timer_fault->elapsed() * 20 >= 10000)
+    if (timer_fault->elapsed() * 9 >= 10000)
     {
         if (ball_prev_pos.first == bx &&
             ball_prev_pos.second == by)
@@ -892,10 +895,10 @@ void SSLWorld::posProcess()
 
     // End Time Detection
     time_before = time_after;
-    time_after = timer->elapsed() * 20 / 300000;
+    time_after = timer->elapsed() * 9 / 300000;
     bool end_time = time_after != time_before;
 
-    if(((timer->elapsed() * 20 / 60000) - minute) > 0)
+    if(((timer->elapsed() * 9 / 60000) - minute) > 0)
     {
         minute++;
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
