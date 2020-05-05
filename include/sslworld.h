@@ -101,6 +101,7 @@ public:
     bool randomStart = true;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault;
+    int minute = 0;
     std::pair<float, float> ball_prev_pos = std::pair<float, float>(0.0, 0.0);
 public slots:
     void recvActions();

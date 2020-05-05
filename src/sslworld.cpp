@@ -351,9 +351,11 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
     timer->start();
     timer_fault = new QElapsedTimer();
     timer_fault->start();
-    in_buffer = new char [65536];
+
+    in_buffer = new char[65536];
     ball_speed_estimator = new speedEstimator(false, 0.95, 100000);
-    for(int i=0;i<cfg->Robots_Count();i++){
+    for (int i = 0; i < cfg->Robots_Count(); i++)
+    {
         blue_speed_estimator[i] = new speedEstimator(true, 0.95, 100000);
         yellow_speed_estimator[i] = new speedEstimator(true, 0.95, 100000);
     }
@@ -463,7 +465,8 @@ void SSLWorld::step(dReal dt)
         dt = customDT;
 
     const auto ratio = m_parent->devicePixelRatio();
-    g->initScene(m_parent->width() * ratio, m_parent->height() * ratio, 0, 0.7, 1);
+    if (isGLEnabled)
+        g->initScene(m_parent->width() * ratio, m_parent->height() * ratio, 0, 0.7, 1);
     // Pq ele faz isso 5 vezes?
     // - Talvez mais precisao (Ele sempre faz um step de dt*0.2 )
     for (int kk = 0; kk < 5; kk++)
@@ -535,14 +538,17 @@ void SSLWorld::step(dReal dt)
         robots[k]->step();
         robots[k]->selected = false;
     }
-    p->draw();
-    //g->drawSkybox(31,32,33,34,35,36);
-    g->drawSkybox(4 * cfg->Robots_Count() + 6 + 1,  //31 for 6 robot
-                  4 * cfg->Robots_Count() + 6 + 2,  //32 for 6 robot
-                  4 * cfg->Robots_Count() + 6 + 3,  //33 for 6 robot
-                  4 * cfg->Robots_Count() + 6 + 4,  //34 for 6 robot
-                  4 * cfg->Robots_Count() + 6 + 5,  //31 for 6 robot
-                  4 * cfg->Robots_Count() + 6 + 6); //36 for 6 robot
+    if (g->isGraphicsEnabled())
+    {
+        p->draw();
+        //g->drawSkybox(31,32,33,34,35,36);
+        g->drawSkybox(4 * cfg->Robots_Count() + 6 + 1,  //31 for 6 robot
+                      4 * cfg->Robots_Count() + 6 + 2,  //32 for 6 robot
+                      4 * cfg->Robots_Count() + 6 + 3,  //33 for 6 robot
+                      4 * cfg->Robots_Count() + 6 + 4,  //34 for 6 robot
+                      4 * cfg->Robots_Count() + 6 + 5,  //31 for 6 robot
+                      4 * cfg->Robots_Count() + 6 + 6); //36 for 6 robot
+    }
 
     dMatrix3 R;
 
@@ -559,7 +565,6 @@ void SSLWorld::step(dReal dt)
     //for (int k=0;k<10;k++) robots[k]->drawLabel();
 
     g->finalizeScene();
-  
 
     sendVisionBuffer();
     posProcess();
@@ -632,13 +637,13 @@ dReal normalizeAngle(dReal a)
 
 Environment *SSLWorld::generatePacket()
 {
-    int t = timer->elapsed();
-    auto* env = new Environment;
-    dReal x,y,z,dir,k;
-    ball->getBodyPosition(x,y,z); 
-    //Estimating Ball Speed  
+    int t = timer->elapsed() * 20;
+    auto *env = new Environment;
+    dReal x, y, z, dir, k;
+    ball->getBodyPosition(x, y, z);
+    //Estimating Ball Speed
 
-    //Ball Pose 
+    //Ball Pose
     dReal ball_pose[3];
     ball_pose[0] = x;
     ball_pose[1] = y;
@@ -677,12 +682,15 @@ Environment *SSLWorld::generatePacket()
             dReal robot_pose[3];
             robot_pose[0] = x;
             robot_pose[1] = y;
-            robot_pose[2] = (normalizeAngle(dir)*M_PI/180.0);
-            dReal robot_vel[3]={0.0};
-            if(i<cfg->Robots_Count()) {
+            robot_pose[2] = (normalizeAngle(dir) * M_PI / 180.0);
+            dReal robot_vel[3] = {0.0};
+            if (i < cfg->Robots_Count())
+            {
                 blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
-            } else{
-                yellow_speed_estimator[i-cfg->Robots_Count()]->estimateSpeed((double) t, robot_pose, robot_vel);
+            }
+            else
+            {
+                yellow_speed_estimator[i - cfg->Robots_Count()]->estimateSpeed((double)t, robot_pose, robot_vel);
             }
             //Robot speed stored in robot_vel. Remember that the sign for linear speed is changed.
 
@@ -714,7 +722,7 @@ Environment *SSLWorld::generatePacket()
     field->set_length(cfg->Field_Length());
     field->set_goal_depth(cfg->Goal_Depth());
     field->set_goal_width(cfg->Goal_Width());
-    env->set_step(timer->elapsed());
+    env->set_step(timer->elapsed() * 20);
     env->set_goals_blue(this->goals_blue);
     env->set_goals_yellow(this->goals_yellow);
     return env;
@@ -728,7 +736,7 @@ SendingPacket::SendingPacket(fira_message::sim_to_ref::Environment *_packet, int
 
 void SSLWorld::sendVisionBuffer()
 {
-    int t = timer->elapsed();
+    int t = timer->elapsed() * 20;
     sendQueue.push_back(new SendingPacket(generatePacket(), t));
     while (t - sendQueue.front()->t >= cfg->sendDelay())
     {
@@ -863,7 +871,7 @@ void SSLWorld::posProcess()
 
     // Fault Detection
     bool fault = false;
-    if (timer_fault->elapsed() >= 10000)
+    if (timer_fault->elapsed() * 20 >= 10000)
     {
         if (ball_prev_pos.first == bx &&
             ball_prev_pos.second == by)
@@ -884,9 +892,15 @@ void SSLWorld::posProcess()
 
     // End Time Detection
     time_before = time_after;
-    time_after = timer->elapsed() / 300000;
+    time_after = timer->elapsed() * 20 / 300000;
     bool end_time = time_after != time_before;
 
+    if(((timer->elapsed() * 20 / 60000) - minute) > 0)
+    {
+        minute++;
+        std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
+    }
+    
     if (randomStart && (is_goal || penalty || fault || goal_shot || end_time))
     {
         dReal x, y;
@@ -990,6 +1004,7 @@ void SSLWorld::posProcess()
         time_before = time_after = 0;
         goals_blue = 0;
         goals_yellow = 0;
+        minute =0;
     }
 }
 
