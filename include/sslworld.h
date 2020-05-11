@@ -95,6 +95,7 @@ public:
     QUdpSocket *commandSocket{};
     bool updatedCursor;
     bool withGoalKick = false;
+    bool randomStart = false;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault;
     std::pair<float, float> ball_prev_pos = std::pair<float, float>(0.0, 0.0);

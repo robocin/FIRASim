@@ -744,25 +744,30 @@ void SSLWorld::sendVisionBuffer()
 
 void SSLWorld::posProcess()
 {
+	bool side;
     bool is_goal = false;
     dReal bx, by, bz;
     ball->getBodyPosition(bx, by, bz);
     // Goal Detection
     if (bx > 0.75 && abs(by) < 0.2)
     {
+		side = true;
         goals_blue++;
         is_goal = true;
     }
     else if (bx < -0.75 && abs(by) < 0.2)
-    {
+    {	
+		side = false;
         goals_yellow++;
         is_goal = true;
     }
 
-    // Penalti Detection
+
     bool penalty = false;
+    bool goal_shot = false;
     if (bx < -0.6 && abs(by < 0.35))
     {
+	    // Penalti Detection
         bool one_in_pen_area = false;
         for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
         {
@@ -773,35 +778,88 @@ void SSLWorld::posProcess()
             robots[num]->getXY(rx, ry);
             if (rx < -0.6 && abs(ry < 0.35))
             {
-                if (one_in_pen_area)
+                if (one_in_pen_area){
                     penalty = true;
+                    side = true;
+                }
                 else
                     one_in_pen_area = true;
             }
         }
+
+		// Atk Fault Detection
+		if(withGoalKick)
+		{
+			bool one_in_enemy_area = false;
+		    for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
+		    {
+		        int num = robotIndex(i, 1);
+		        if (!robots[num]->on)
+		            continue;
+		        dReal rx, ry;
+		        robots[num]->getXY(rx, ry);
+		        if (rx < -0.6 && abs(ry < 0.35))
+		        {
+		            if (one_in_enemy_area){
+                        goal_shot = true;
+                        side = false;
+
+                    }
+		            else
+		                one_in_enemy_area = true;
+		        }
+		    }
+		}
     }
 
-    // Atk Fault Detection
-    bool atk_fault = false;
-    if (bx > 0.6 && abs(by < 0.35) && withGoalKick)
-    {
+   
+
+	if (bx > 0.6 && abs(by < 0.35))
+	{	
+
+		// Penalti Detection
         bool one_in_pen_area = false;
         for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
         {
-            int num = robotIndex(i, 0);
+            int num = robotIndex(i, 1);
             if (!robots[num]->on)
                 continue;
             dReal rx, ry;
             robots[num]->getXY(rx, ry);
             if (rx > 0.6 && abs(ry < 0.35))
             {
-                if (one_in_pen_area)
+                if (one_in_pen_area){
                     penalty = true;
+                    side = false;
+                }
                 else
                     one_in_pen_area = true;
             }
         }
-    }
+		
+		// Atk Fault Detection
+		if(withGoalKick)
+		{
+			bool one_in_enemy_area = false;
+		    for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
+		    {
+		        int num = robotIndex(i, 0);
+		        if (!robots[num]->on)
+		            continue;
+		        dReal rx, ry;
+		        robots[num]->getXY(rx, ry);
+		        if (rx > 0.6 && abs(ry < 0.35))
+		        {
+		            if (one_in_enemy_area){
+                        goal_shot = true;
+                        side = true;
+                    }
+		            else
+		                one_in_enemy_area = true;
+		        }
+		    }
+		}
+	}
 
     // Fault Detection
     bool fault = false;
@@ -829,7 +887,7 @@ void SSLWorld::posProcess()
     time_after = timer->elapsed() / 300000;
     bool end_time = time_after != time_before;
 
-    if (is_goal || penalty || fault || atk_fault || end_time)
+    if (randomStart && (is_goal || penalty || fault || goal_shot || end_time))
     {
         float LO_X = -0.65;
         float LO_Y = -0.55;
@@ -855,6 +913,85 @@ void SSLWorld::posProcess()
             goals_blue = 0;
             goals_yellow = 0;
         }
+    }else if(is_goal || end_time){
+        ball->setBodyPosition(0,0,0);
+        if(side)
+        {
+            dReal posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71};
+            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+            
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i]*(-1),posY[i]);
+            }
+            
+        }else
+        {
+            dReal posX[6] = {0.08,0.35,0.71,-0.15,-0.35,-0.71};
+            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i]*(-1),posY[i]);
+            }
+        }
+        if (end_time)
+        {
+            timer->restart();
+            time_before = time_after = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+        }
+    }else if(penalty){
+        
+        if(side)
+        {   
+            dReal posX[6] = {0.75, -0.06, -0.06, 0.35, -0.05,-0.74};
+            dReal posY[6] = {-0.01, 0.23, -0.33, 0.02, 0.48, 0.01};
+
+            ball->setBodyPosition(-0.47,-0.01,0);
+
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i]*(-1),posY[i]);
+
+            }
+        }else
+        {
+            dReal posX[6] = {0.35, -0.05,-0.74,0.75, -0.06, -0.06};
+            dReal posY[6] = {0.02, 0.48, 0.01,-0.01, 0.23, -0.33};
+            
+
+            ball->setBodyPosition(0.47,-0.01,0);
+
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i],posY[i]);
+
+            }
+        }
+        
+    }else if(fault){
+
+    }else if(goal_shot){
+        
+        dReal posX[6] = {0.65, 0.48, 0.49, 0.19, 0.18, -0.67};
+        dReal posY[6] = {0.11, 0.37, -0.33, 0.13, -0.21, -0.01};
+        if(side)
+        {
+            ball->setBodyPosition(0.61, 0.11,0);
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i],posY[i]);
+            }
+        }else
+        {
+            ball->setBodyPosition(-0.61, 0.11,0);
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i]*(-1),posY[i]);
+            }
+        }
+
     }
 }
 
