@@ -62,6 +62,7 @@ private:
     bool lastInfraredState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
     int time_before = 0;
     int time_after = 0;
+    int steps;
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
 
     void getValidPosition(dReal &x, dReal &y, uint32_t max);
@@ -79,6 +80,9 @@ public:
     fira_message::sim_to_ref::Environment* generatePacket();
     void sendVisionBuffer();
     int  robotIndex(unsigned int robot, int team);
+    const dReal* ball_vel;
+    const dReal* robot_vel;
+    const dReal* robot_angular_vel;
 
     ConfigWidget* cfg;
     CGraphics* g;
