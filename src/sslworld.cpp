@@ -889,30 +889,20 @@ void SSLWorld::posProcess()
 
     if (randomStart && (is_goal || penalty || fault || goal_shot || end_time))
     {
-        float LO_X = -0.65;
-        float LO_Y = -0.55;
-        float HI_X = 0.65;
-        float HI_Y = 0.55;
-        srand(static_cast<unsigned>(time(0)));
-        float x = LO_X + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (HI_X - LO_X)));
-        float y = LO_Y + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (HI_Y - LO_Y)));
-        ball->setBodyPosition(x, y, 0);
+        dReal x, y;
         for (uint32_t i = 0; i < cfg->Robots_Count() * 2; i++)
         {
-            x = LO_X + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (HI_X - LO_X)));
-            y = LO_Y + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (HI_Y - LO_Y)));
             if (!robots[i]->on)
                 continue;
+            getValidPosition(x,y,i);
             robots[i]->setXY(x, y);
         }
+        
+        getValidPosition(x,y, cfg->Robots_Count() * 2);
+        ball->setBodyPosition(x, y, 0);
+
         timer_fault->restart();
-        if (end_time)
-        {
-            timer->restart();
-            time_before = time_after = 0;
-            goals_blue = 0;
-            goals_yellow = 0;
-        }
+        
     }else if(is_goal || end_time){
         ball->setBodyPosition(0,0,0);
         if(side)
@@ -934,15 +924,12 @@ void SSLWorld::posProcess()
                 robots[i]->setXY(posX[i]*(-1),posY[i]);
             }
         }
-        if (end_time)
-        {
-            timer->restart();
-            time_before = time_after = 0;
-            goals_blue = 0;
-            goals_yellow = 0;
-        }
-    }else if(penalty){
+        timer_fault->restart();
+
         
+    }else if(penalty){
+        timer_fault->restart();
+
         if(side)
         {   
             dReal posX[6] = {0.75, -0.06, -0.06, 0.35, -0.05,-0.74};
@@ -971,9 +958,12 @@ void SSLWorld::posProcess()
         }
         
     }else if(fault){
+        timer_fault->restart();
+
 
     }else if(goal_shot){
-        
+        timer_fault->restart();
+
         dReal posX[6] = {0.65, 0.48, 0.49, 0.19, 0.18, -0.67};
         dReal posY[6] = {0.11, 0.37, -0.33, 0.13, -0.21, -0.01};
         if(side)
@@ -993,6 +983,36 @@ void SSLWorld::posProcess()
         }
 
     }
+
+    if (end_time)
+    {
+        timer->restart();
+        time_before = time_after = 0;
+        goals_blue = 0;
+        goals_yellow = 0;
+    }
+}
+
+void SSLWorld::getValidPosition(dReal &x, dReal &y, uint32_t max){
+    float LO_X = -0.65;
+    float LO_Y = -0.55;
+    float HI_X = 0.65;
+    float HI_Y = 0.55;
+    srand(static_cast<unsigned>(time(0)));
+    bool validPlace;
+    max = max > 0 ? max : cfg->Robots_Count() * 2;
+    do{
+        validPlace = true;
+        x = LO_X + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (HI_X - LO_X)));
+        y = LO_Y + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (HI_Y - LO_Y)));
+        for(uint32_t i = 0; i < max; i++){
+            dReal x2, y2;
+            robots[i]->getXY(x2,y2);
+            if(sqrt(((x-x2)*(x-x2))+((y-y2)*(y-y2))) <= ((cfg)->robotSettings.RobotRadius*2)){
+                validPlace = false;
+            }
+        }
+    }while(!validPlace);
 }
 
 void RobotsFormation::setAll(const dReal *xx, const dReal *yy)

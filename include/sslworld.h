@@ -63,6 +63,9 @@ private:
     int time_before = 0;
     int time_after = 0;
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
+
+    void getValidPosition(dReal &x, dReal &y, uint32_t max);
+
 public:    
     dReal customDT;
     int goals_yellow = 0;
@@ -95,7 +98,7 @@ public:
     QUdpSocket *commandSocket{};
     bool updatedCursor;
     bool withGoalKick = false;
-    bool randomStart = false;
+    bool randomStart = true;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault;
     std::pair<float, float> ball_prev_pos = std::pair<float, float>(0.0, 0.0);
