@@ -141,6 +141,7 @@ bool ballCallBack(dGeomID o1, dGeomID o2, PSurface *s, int /*robots_count*/)
 SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
     : QObject(parent)
 {
+    steps = 0;
     isGLEnabled = true;
     customDT = -1;
     _w = this;
@@ -506,6 +507,7 @@ void SSLWorld::step(dReal dt)
         selected = -1;
         p->step(dt * 0.2);
     }
+    steps++;
 
     int best_k = -1;
     dReal best_dist = 1e8;
@@ -640,7 +642,8 @@ dReal normalizeAngle(dReal a)
 
 Environment *SSLWorld::generatePacket()
 {
-    int t = timer->elapsed() * 9;
+   
+    int t = steps*cfg->DeltaTime()*1000;//timer->elapsed() * 9;
     auto *env = new Environment;
     dReal x, y, z, dir, k;
     ball->getBodyPosition(x, y, z);
@@ -651,8 +654,10 @@ Environment *SSLWorld::generatePacket()
     ball_pose[0] = x;
     ball_pose[1] = y;
     ball_pose[2] = 0.0; //Ball's Angle Not considered
-    dReal ball_vel[3] = {0.0};
-    ball_speed_estimator->estimateSpeed((double)(t), ball_pose, ball_vel);
+    //dReal ball_vel[3] = {0.0};
+    //const dReal* ball_vel;
+    //ball_speed_estimator->estimateSpeed((double)(t), ball_pose, ball_vel);
+    ball_vel = dBodyGetLinearVel(ball->body);
     //Ball speed stored in vall_vel. Remember that the sign for linear speed is changed.
     dReal dev_x = cfg->noiseDeviation_x();
     dReal dev_y = cfg->noiseDeviation_y();
@@ -672,6 +677,7 @@ Environment *SSLWorld::generatePacket()
         vball->set_vx(ball_vel[0]);
         vball->set_vy(ball_vel[1]);
     }
+    //printf("aqui\n");
     for (uint32_t i = 0; i < cfg->Robots_Count() * 2; i++)
     {
         if (!cfg->vanishing() || (rand0_1() > cfg->blue_team_vanishing()))
@@ -686,16 +692,30 @@ Environment *SSLWorld::generatePacket()
             robot_pose[0] = x;
             robot_pose[1] = y;
             robot_pose[2] = (normalizeAngle(dir) * M_PI / 180.0);
-            dReal robot_vel[3] = {0.0};
+            //dReal robot_vel[3] = {0.0};
+            //dReal* robot_vel;
+            //const dReal* robot_vel_aux;
+            //const dReal* robot_angular_vel;
             if (i < cfg->Robots_Count())
             {
-                blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
+                //blue_speed_estimator[i]->estimateSpeed((double)t, robot_pose, robot_vel);
+                robot_vel = dBodyGetLinearVel(robots[i]->chassis->body);
+                // robot_vel[0] = robot_vel_aux[0];
+                // robot_vel[1] = robot_vel_aux[1];
+                robot_angular_vel = dBodyGetAngularVel(robots[i]->chassis->body);
+                // robot_vel[2] = robot_angular_vel[2];
             }
             else
             {
-                yellow_speed_estimator[i - cfg->Robots_Count()]->estimateSpeed((double)t, robot_pose, robot_vel);
+                //yellow_speed_estimator[i - cfg->Robots_Count()]->estimateSpeed((double)t, robot_pose, robot_vel);
+                robot_vel = dBodyGetLinearVel(robots[i]->chassis->body);
+                //robot_vel[0] = robot_vel_aux[0];
+                //robot_vel[1] = robot_vel_aux[1];
+                robot_angular_vel = dBodyGetAngularVel(robots[i]->chassis->body);
+                // robot_vel[2] = *robot_angular_vel;
             }
             //Robot speed stored in robot_vel. Remember that the sign for linear speed is changed.
+            //printf("aqui\n");
 
             // reset when the robot has turned over
             if (cfg->ResetTurnOver() && k < 0.9)
@@ -717,7 +737,7 @@ Environment *SSLWorld::generatePacket()
             rob->set_orientation(normalizeAngle(randn_notrig(dir, dev_a)) * M_PI / 180.0);
             rob->set_vx(robot_vel[0]);
             rob->set_vy(robot_vel[1]);
-            rob->set_vorientation(robot_vel[2]);
+            rob->set_vorientation(robot_angular_vel[2]);
         }
     }
     fira_message::Field *field = env->mutable_field();
@@ -725,7 +745,7 @@ Environment *SSLWorld::generatePacket()
     field->set_length(cfg->Field_Length());
     field->set_goal_depth(cfg->Goal_Depth());
     field->set_goal_width(cfg->Goal_Width());
-    env->set_step(timer->elapsed() * 9);
+    env->set_step(steps*cfg->DeltaTime()*1000);
     env->set_goals_blue(this->goals_blue);
     env->set_goals_yellow(this->goals_yellow);
     return env;
@@ -757,6 +777,8 @@ void SSLWorld::posProcess()
 {
 	bool side;
     bool is_goal = false;
+    bool out_of_bands = false;
+
     dReal bx, by, bz;
     ball->getBodyPosition(bx, by, bz);
     // Goal Detection
@@ -772,6 +794,7 @@ void SSLWorld::posProcess()
         goals_yellow++;
         is_goal = true;
     }
+    if(bx<-2 || bx>2 || by>2 || by<-2) out_of_bands = true;
 
 
     bool penalty = false;
