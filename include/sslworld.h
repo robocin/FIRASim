@@ -75,6 +75,7 @@ public:
     SSLWorld(QGLWidget* parent, ConfigWidget* _cfg, RobotsFormation *form);
     ~SSLWorld() override;
     void glinit();
+    void simStep(dReal dt=-1);
     void step(dReal dt=-1);
     void posProcess();
     fira_message::sim_to_ref::Environment* generatePacket();

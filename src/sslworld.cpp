@@ -456,6 +456,64 @@ void SSLWorld::glinit()
     p->glinit();
 }
 
+void SSLWorld::simStep(dReal dt)
+{
+
+    if (customDT > 0)
+        dt = customDT;
+
+    // Pq ele faz isso 5 vezes?
+    // - Talvez mais precisao (Ele sempre faz um step de dt*0.2 )
+    for (int kk = 0; kk < 5; kk++)
+    {
+        const dReal *ballvel = dBodyGetLinearVel(ball->body);
+        // Norma do vetor velocidade da bola
+        dReal ballspeed = ballvel[0] * ballvel[0] + ballvel[1] * ballvel[1] + ballvel[2] * ballvel[2];
+        ballspeed = sqrt(ballspeed);
+        dReal ballfx = 0, ballfy = 0, ballfz = 0;
+        dReal balltx = 0, ballty = 0, balltz = 0;
+        if (ballspeed < 0.01)
+        {
+            ; //const dReal* ballAngVel = dBodyGetAngularVel(ball->body);
+            //TODO: what was supposed to be here?
+        }
+        else
+        {
+            // Velocidade real  normalizada (com atrito envolvido) da bola
+            dReal accel = last_speed - ballspeed;
+            accel = -accel / dt;
+            last_speed = ballspeed;
+            dReal fk = accel * cfg->BallFriction() * cfg->BallMass() * cfg->Gravity();
+            ballfx = -fk * ballvel[0] / ballspeed;
+            ballfy = -fk * ballvel[1] / ballspeed;
+            ballfz = -fk * ballvel[2] / ballspeed;
+            balltx = -ballfy * cfg->BallRadius();
+            ballty = ballfx * cfg->BallRadius();
+            balltz = 0;
+            dBodyAddTorque(ball->body, balltx, ballty, balltz);
+        }
+        dBodyAddForce(ball->body, ballfx, ballfy, ballfz);
+        if (dt == 0)
+            dt = last_dt;
+        else
+            last_dt = dt;
+
+        selected = -1;
+        p->step(dt * 0.2);
+    }
+    steps++;
+
+    for (int k = 0; k < cfg->Robots_Count() * 2; k++)
+    {
+        robots[k]->step();
+        robots[k]->selected = false;
+    }
+
+    // sendVisionBuffer();
+    posProcess();
+    frame_num++;
+}
+
 void SSLWorld::step(dReal dt)
 {
     if (!isGLEnabled)

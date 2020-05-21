@@ -7,7 +7,6 @@ set(VERSION "1.0.0")
 set(VENDOR "Parsian")
 set(MAINTAINER "Mahi Rahimi <mohammadmahdi76@gmail.com>")
 
-
 # some utils and helper vars
 string(TOLOWER ${CMAKE_PROJECT_NAME} CMAKE_PROJECT_NAME_LOWER)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
@@ -38,7 +37,7 @@ if(UNIX)
 endif()
 
 # set explicitly the c++ standard to use
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 
 # add src dir to included directories
 include_directories(${PROJECT_SOURCE_DIR}/include)

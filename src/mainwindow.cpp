@@ -254,7 +254,14 @@ MainWindow::MainWindow(QWidget *parent)
     robotwidget->robotCombo->setCurrentIndex(0);
     robotwidget->setPicture(glwidget->ssl->robots[robotIndex(glwidget->Current_robot,glwidget->Current_team)]->img);
     robotwidget->id = 0;
-    scene = new QGraphicsScene(0,0,800,600);    
+    scene = new QGraphicsScene(0,0,800,600);
+    QElapsedTimer *timer_gonca = new QElapsedTimer();
+    timer_gonca->start();
+    dReal dt_gonca = 0.016;
+    int loop_size = 1000;
+    for(int i=0; i < 1000; i++)
+        glwidget->ssl->simStep(dt_gonca);
+    std::cout << loop_size*dt_gonca*1000/(float)timer_gonca->elapsed() << std::endl;    
 }
 
 MainWindow::~MainWindow()
