@@ -459,7 +459,7 @@ void SSLWorld::glinit()
     // Init at last
     p->glinit();
 }
-
+/*
 void SSLWorld::simStep(dReal dt)
 {
 
@@ -516,7 +516,7 @@ void SSLWorld::simStep(dReal dt)
     // sendVisionBuffer();
     posProcess();
     frame_num++;
-}
+}*/
 
 void SSLWorld::step(dReal dt)
 {
@@ -572,9 +572,9 @@ void SSLWorld::step(dReal dt)
         selected = -1;
         p->step(dt * 0.2);
     }
-     
-    steps++;
+    
     steps_super++;
+    steps++;
     int tiago = timer_gonca->elapsed();
     if(tiago>1000){
         std::cout <<tiago <<"      "<<steps<< "     "<<dt<<"      "<<dt*steps*1000/(float)tiago << std::endl;  
@@ -648,7 +648,7 @@ void SSLWorld::step(dReal dt)
     sendVisionBuffer();
     posProcess();
     frame_num++;
-    if(received_first) received = false;
+    received = false;
 }
 
 void SSLWorld::recvActions()
@@ -673,7 +673,6 @@ void SSLWorld::recvActions()
                     robots[id]->setSpeed(1, robot_cmd.wheel_right());
                 }
                 received = true;
-                received_first = true;
             }
             if (packet.has_replace())
             {
@@ -996,11 +995,11 @@ void SSLWorld::posProcess()
 
     // End Time Detection
     time_before = time_after;
-    time_after = steps_super*cfg->DeltaTime()*1000 / 300000;  //timer->elapsed() * 9 / 300000;
+    time_after = (int)(steps_super*cfg->DeltaTime()*1000) / 300000;  //timer->elapsed() * 9 / 300000;
     bool end_time = time_after != time_before;
 
     //if(((timer->elapsed() * 9 / 60000) - minute) > 0)
-    if(((steps_super*cfg->DeltaTime()*1000/ 60000) - minute) > 0)
+    if((((int)(steps_super*cfg->DeltaTime()*1000)/ 60000) - minute) > 0)
     {
         minute++;
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
