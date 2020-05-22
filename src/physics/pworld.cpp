@@ -168,7 +168,8 @@ void PWorld::step(dReal dt)
 {
     try {
     dSpaceCollide (space,this,&nearCallback);
-    dWorldStep (world,(dt<0) ? delta_time : dt);
+    dWorldSetQuickStepNumIterations(world, 5); 	
+    dWorldQuickStep (world,(dt<0) ? delta_time : dt);
     dJointGroupEmpty (contactgroup);
     }
     catch (...)

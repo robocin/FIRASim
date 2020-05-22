@@ -352,6 +352,8 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
     timer->start();
     timer_fault = new QElapsedTimer();
     timer_fault->start();
+    timer_gonca = new QElapsedTimer();
+    timer_gonca->start();
 
     in_buffer = new char[65536];
     ball_speed_estimator = new speedEstimator(false, 0.95, 100000);
@@ -528,6 +530,8 @@ void SSLWorld::step(dReal dt)
         g->initScene(m_parent->width() * ratio, m_parent->height() * ratio, 0, 0.7, 1);
     // Pq ele faz isso 5 vezes?
     // - Talvez mais precisao (Ele sempre faz um step de dt*0.2 )
+    //QElapsedTimer *timer_gonca = new QElapsedTimer();
+    //timer_gonca->start();
     for (int kk = 0; kk < 5; kk++)
     {
         const dReal *ballvel = dBodyGetLinearVel(ball->body);
@@ -565,7 +569,15 @@ void SSLWorld::step(dReal dt)
         selected = -1;
         p->step(dt * 0.2);
     }
+     
     steps++;
+    int tiago = timer_gonca->elapsed();
+    if(tiago>1000){
+        std::cout <<tiago <<"      "<<steps<< "     "<<dt<<"      "<<dt*steps*1000/(float)tiago << std::endl;  
+        timer_gonca->restart();
+        steps = 0;
+    }
+   
 
     int best_k = -1;
     dReal best_dist = 1e8;
