@@ -143,6 +143,7 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
 {
     steps = 0;
     steps_super = 0;
+    steps_fault = 0;
     isGLEnabled = true;
     customDT = -1;
     _w = this;
@@ -349,10 +350,10 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
             }
         }
     }
-    timer = new QElapsedTimer();
-    timer->start();
-    timer_fault = new QElapsedTimer();
-    timer_fault->start();
+    //timer = new QElapsedTimer();
+    //timer->start();
+    //timer_fault = new QElapsedTimer();
+    //timer_fault->start();
     timer_gonca = new QElapsedTimer();
     timer_gonca->start();
 
@@ -719,7 +720,7 @@ dReal normalizeAngle(dReal a)
 Environment *SSLWorld::generatePacket()
 {
    
-    int t = timer->elapsed() * 9;
+    int t = steps_super*cfg->DeltaTime()*1000;  //timer->elapsed() * 9;
     auto *env = new Environment;
     dReal x, y, z, dir, k;
     ball->getBodyPosition(x, y, z);
@@ -835,7 +836,7 @@ SendingPacket::SendingPacket(fira_message::sim_to_ref::Environment *_packet, int
 
 void SSLWorld::sendVisionBuffer()
 {
-    int t = timer->elapsed() * 9;
+    int t = steps_super*cfg->DeltaTime()*1000; //timer->elapsed() * 9;
     sendQueue.push_back(new SendingPacket(generatePacket(), t));
     while (t - sendQueue.front()->t >= cfg->sendDelay())
     {
@@ -973,7 +974,8 @@ void SSLWorld::posProcess()
 
     // Fault Detection
     bool fault = false;
-    if (timer_fault->elapsed() * 9 >= 10000)
+    steps_fault++;
+    if (steps_fault*cfg->DeltaTime()*1000 >= 10000)
     {
         if (ball_prev_pos.first == bx &&
             ball_prev_pos.second == by)
@@ -988,16 +990,17 @@ void SSLWorld::posProcess()
         {
             ball_prev_pos.first = bx;
             ball_prev_pos.second = by;
-            timer_fault->restart();
+            steps_fault = 0;//timer_fault->restart();
         }
     }
 
     // End Time Detection
     time_before = time_after;
-    time_after = timer->elapsed() * 9 / 300000;
+    time_after = steps_super*cfg->DeltaTime()*1000 / 300000;  //timer->elapsed() * 9 / 300000;
     bool end_time = time_after != time_before;
 
-    if(((timer->elapsed() * 9 / 60000) - minute) > 0)
+    //if(((timer->elapsed() * 9 / 60000) - minute) > 0)
+    if(((steps_super*cfg->DeltaTime()*1000/ 60000) - minute) > 0)
     {
         minute++;
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
@@ -1012,8 +1015,7 @@ void SSLWorld::posProcess()
                 continue;
             getValidPosition(x,y,i);
             robots[i]->setXY(x, y);
-        }
-        
+        }        
         getValidPosition(x,y, cfg->Robots_Count() * 2);
         ball->setBodyPosition(x, y, 0);
 
@@ -1100,10 +1102,11 @@ void SSLWorld::posProcess()
 
     }
 
+    steps_fault =0;//timer_fault->restart();
     if (end_time)
     {
         steps_super = 0;
-        timer->restart();
+        //timer->restart();
         time_before = time_after = 0;
         goals_blue = 0;
         goals_yellow = 0;

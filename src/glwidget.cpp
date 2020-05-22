@@ -365,7 +365,7 @@ void GLWidget::step()
             ssl->step(ddt);
         }
         else {
-            if(ssl->received || cont_stopped>100){
+            if(ssl->received || cont_stopped>10){
                 cont_stopped = 0;
                 ssl->step(cfg->DeltaTime());
             } else{

@@ -62,7 +62,7 @@ private:
     bool lastInfraredState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
     int time_before = 0;
     int time_after = 0;
-    int steps, steps_super;
+    int steps, steps_super, steps_fault;
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
 
     void getValidPosition(dReal &x, dReal &y, uint32_t max);
