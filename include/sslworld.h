@@ -62,7 +62,7 @@ private:
     bool lastInfraredState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
     int time_before = 0;
     int time_after = 0;
-    int steps;
+    int steps, steps_super;
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
 
     void getValidPosition(dReal &x, dReal &y, uint32_t max);
@@ -106,6 +106,7 @@ public:
     bool randomStart = true;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault, *timer_gonca;
+    bool received = true, received_first = false;
     int minute = 0;
     dReal last_speed = 0.0;
     std::pair<float, float> ball_prev_pos = std::pair<float, float>(0.0, 0.0);

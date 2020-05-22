@@ -42,11 +42,11 @@ ConfigWidget::ConfigWidget()
 
   VarListPtr game_vars(new VarList("Game"));
   geo_vars->addChild(game_vars);
-  ADD_ENUM(StringEnum, Division, "Division B", "Division")
+  ADD_ENUM(StringEnum, Division, "Division A", "Division")
   ADD_TO_ENUM(Division, "Division A");
   ADD_TO_ENUM(Division, "Division B");
   END_ENUM(game_vars, Division);
-  ADD_VALUE(game_vars,Int, Robots_Count, 5, "Robots Count")
+  ADD_VALUE(game_vars,Int, Robots_Count, 3, "Robots Count")
   VarListPtr fields_vars(new VarList("Field"));
   VarListPtr div_a_vars(new VarList("Division A"));
   VarListPtr div_b_vars(new VarList("Division B"));
@@ -100,7 +100,7 @@ ConfigWidget::ConfigWidget()
     phys_vars->addChild(worldp_vars);  
         ADD_VALUE(worldp_vars,Double,DesiredFPS,500,"Desired FPS")
         ADD_VALUE(worldp_vars,Bool,SyncWithGL,false,"Synchronize ODE with OpenGL")
-        ADD_VALUE(worldp_vars,Double,DeltaTime,0.05,"ODE time step")
+        ADD_VALUE(worldp_vars,Double,DeltaTime,0.03,"ODE time step")
         ADD_VALUE(worldp_vars,Double,Gravity,9.8,"Gravity")
         ADD_VALUE(worldp_vars,Bool,ResetTurnOver,true,"Auto reset turn-over")
   VarListPtr ballp_vars(new VarList("Ball"));

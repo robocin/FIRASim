@@ -169,6 +169,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    //QObject::connect(commandSocket,SIGNAL(readyRead()),this,SLOT(update()));
+    //QObject::connect(timer, SIGNAL(timeout()), this, SLOT(sendBuffer()));
     QObject::connect(takeSnapshotAct, SIGNAL(triggered(bool)), this, SLOT(takeSnapshot()));
     QObject::connect(takeSnapshotToClipboardAct, SIGNAL(triggered(bool)), this, SLOT(takeSnapshotToClipboard()));
     QObject::connect(exit, SIGNAL(triggered(bool)), this, SLOT(close()));
@@ -257,7 +259,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(0,0,800,600);
     // QElapsedTimer *timer_gonca = new QElapsedTimer();
     // timer_gonca->start();
-    // dReal dt_gonca = 0.05;
+    // dReal dt_gonca = 0.03;
     // int loop_size = 1000;
     // for(int i=0; i < 1000; i++)
     //     glwidget->ssl->simStep(dt_gonca);
@@ -503,13 +505,19 @@ void MainWindow::reconnectVisionSocket()
     visionServer->change_address(configwidget->VisionMulticastAddr());
     visionServer->change_port(configwidget->VisionMulticastPort());
     logStatus(QString("Vision server connected on: %1").arg(configwidget->VisionMulticastPort()),QColor("green"));
+    //sendBuffer();
 }
 
 void MainWindow::recvActions()
 {
     glwidget->ssl->recvActions();
+    update();
 }
 
+void MainWindow::sendBuffer()
+{
+    glwidget->ssl->sendVisionBuffer();
+}
 void MainWindow::setIsGlEnabled(bool value)
 {
   glwidget->ssl->isGLEnabled = value;

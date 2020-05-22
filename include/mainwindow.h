@@ -61,6 +61,7 @@ public slots:
     void reconnectCommandSocket();
     void reconnectVisionSocket();
     void recvActions();
+    void sendBuffer();
     void setIsGlEnabled(bool value);
     void withGoalKick(bool value);
 

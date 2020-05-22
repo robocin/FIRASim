@@ -142,6 +142,7 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
     : QObject(parent)
 {
     steps = 0;
+    steps_super = 0;
     isGLEnabled = true;
     customDT = -1;
     _w = this;
@@ -518,6 +519,7 @@ void SSLWorld::simStep(dReal dt)
 
 void SSLWorld::step(dReal dt)
 {
+    //std::cout<<"aqui"<<std::endl;
     if (!isGLEnabled)
         g->disableGraphics();
     else
@@ -571,6 +573,7 @@ void SSLWorld::step(dReal dt)
     }
      
     steps++;
+    steps_super++;
     int tiago = timer_gonca->elapsed();
     if(tiago>1000){
         std::cout <<tiago <<"      "<<steps<< "     "<<dt<<"      "<<dt*steps*1000/(float)tiago << std::endl;  
@@ -644,6 +647,7 @@ void SSLWorld::step(dReal dt)
     sendVisionBuffer();
     posProcess();
     frame_num++;
+    if(received_first) received = false;
 }
 
 void SSLWorld::recvActions()
@@ -667,6 +671,8 @@ void SSLWorld::recvActions()
                     robots[id]->setSpeed(0, -1 * robot_cmd.wheel_left());
                     robots[id]->setSpeed(1, robot_cmd.wheel_right());
                 }
+                received = true;
+                received_first = true;
             }
             if (packet.has_replace())
             {
@@ -713,7 +719,7 @@ dReal normalizeAngle(dReal a)
 Environment *SSLWorld::generatePacket()
 {
    
-    int t = steps*cfg->DeltaTime()*1000;//timer->elapsed() * 9;
+    int t = timer->elapsed() * 9;
     auto *env = new Environment;
     dReal x, y, z, dir, k;
     ball->getBodyPosition(x, y, z);
@@ -815,7 +821,7 @@ Environment *SSLWorld::generatePacket()
     field->set_length(cfg->Field_Length());
     field->set_goal_depth(cfg->Goal_Depth());
     field->set_goal_width(cfg->Goal_Width());
-    env->set_step(steps*cfg->DeltaTime()*1000);
+    env->set_step(t);
     env->set_goals_blue(this->goals_blue);
     env->set_goals_yellow(this->goals_yellow);
     return env;
@@ -1096,6 +1102,7 @@ void SSLWorld::posProcess()
 
     if (end_time)
     {
+        steps_super = 0;
         timer->restart();
         time_before = time_after = 0;
         goals_blue = 0;
