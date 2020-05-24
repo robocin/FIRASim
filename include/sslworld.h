@@ -105,7 +105,7 @@ public:
     bool withGoalKick = false;
     bool randomStart = true;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
-    QElapsedTimer *timer, *timer_fault, *timer_gonca;
+    QElapsedTimer *timer, *timer_fault;
     bool received = true;
     bool fullSpeed = false;
     int minute = 0;

@@ -350,12 +350,6 @@ SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
             }
         }
     }
-    //timer = new QElapsedTimer();
-    //timer->start();
-    //timer_fault = new QElapsedTimer();
-    //timer_fault->start();
-    timer_gonca = new QElapsedTimer();
-    timer_gonca->start();
 
     in_buffer = new char[65536];
     ball_speed_estimator = new speedEstimator(false, 0.95, 100000);
@@ -462,7 +456,6 @@ void SSLWorld::glinit()
 
 void SSLWorld::step(dReal dt)
 {
-    //std::cout<<"aqui"<<std::endl;
     if (!isGLEnabled)
         g->disableGraphics();
     else
@@ -475,8 +468,6 @@ void SSLWorld::step(dReal dt)
         g->initScene(m_parent->width() * ratio, m_parent->height() * ratio, 0, 0.7, 1);
     // Pq ele faz isso 5 vezes?
     // - Talvez mais precisao (Ele sempre faz um step de dt*0.2 )
-    //QElapsedTimer *timer_gonca = new QElapsedTimer();
-    //timer_gonca->start();
     for (int kk = 0; kk < 5; kk++)
     {
         const dReal *ballvel = dBodyGetLinearVel(ball->body);
@@ -576,9 +567,9 @@ void SSLWorld::step(dReal dt)
             g->drawCircle(cursor_x, cursor_y, 0.001, cursor_radius);
             glDisable(GL_BLEND);
         }
-    //for (int k=0;k<10;k++) robots[k]->drawLabel();
 
-    g->finalizeScene();
+    if (g->isGraphicsEnabled())
+        g->finalizeScene();
 
     sendVisionBuffer();
     posProcess();
@@ -855,55 +846,6 @@ void SSLWorld::posProcess()
 		}
     }
 
-   
-
-	if (bx > 0.6 && abs(by < 0.35))
-	{	
-
-		// Penalti Detection
-        bool one_in_pen_area = false;
-        for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
-        {
-            int num = robotIndex(i, 1);
-            if (!robots[num]->on)
-                continue;
-            dReal rx, ry;
-            robots[num]->getXY(rx, ry);
-            if (rx > 0.6 && abs(ry < 0.35))
-            {
-                if (one_in_pen_area){
-                    penalty = true;
-                    side = false;
-                }
-                else
-                    one_in_pen_area = true;
-            }
-        }
-		
-		// Atk Fault Detection
-		if(withGoalKick)
-		{
-			bool one_in_enemy_area = false;
-		    for (uint32_t i = 0; i < cfg->Robots_Count(); i++)
-		    {
-		        int num = robotIndex(i, 0);
-		        if (!robots[num]->on)
-		            continue;
-		        dReal rx, ry;
-		        robots[num]->getXY(rx, ry);
-		        if (rx > 0.6 && abs(ry < 0.35))
-		        {
-		            if (one_in_enemy_area){
-                        goal_shot = true;
-                        side = true;
-                    }
-		            else
-		                one_in_enemy_area = true;
-		        }
-		    }
-		}
-	}
-
     // Fault Detection
     bool fault = false;
     steps_fault++;
@@ -922,7 +864,7 @@ void SSLWorld::posProcess()
         {
             ball_prev_pos.first = bx;
             ball_prev_pos.second = by;
-            steps_fault = 0; //timer_fault->restart();
+            steps_fault = 0;
         }
     }
 
@@ -1040,17 +982,6 @@ void SSLWorld::posProcess()
             minute = 0;
         }
 
-    }
-
-    steps_fault =0;//timer_fault->restart();
-    if (end_time)
-    {
-        steps_super = 0;
-        //timer->restart();
-        time_before = time_after = 0;
-        goals_blue = 0;
-        goals_yellow = 0;
-        minute =0;
     }
 }
 
