@@ -164,12 +164,13 @@ PSurface* PWorld::findSurface(PObject* o1,PObject* o2)
     return nullptr;
 }
 
-void PWorld::step(dReal dt)
+void PWorld::step(dReal dt, bool sync)
 {
     try {
     dSpaceCollide (space,this,&nearCallback);
-    dWorldSetQuickStepNumIterations(world, 20); 	
-    dWorldQuickStep (world,(dt<0) ? delta_time : dt);
+    dWorldSetQuickStepNumIterations(world, 20);
+    if (sync) dWorldQuickStep (world,(dt<0) ? delta_time : dt);
+    else dWorldStep(world, (dt<0) ? delta_time : dt);
     dJointGroupEmpty (contactgroup);
     }
     catch (...)

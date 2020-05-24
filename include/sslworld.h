@@ -107,6 +107,7 @@ public:
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault, *timer_gonca;
     bool received = true;
+    bool fullSpeed = false;
     int minute = 0;
     dReal last_speed = 0.0;
     std::pair<float, float> ball_prev_pos = std::pair<float, float>(0.0, 0.0);

@@ -41,7 +41,7 @@ public:
     void initAllObjects();
     PSurface* createSurface(PObject* o1,PObject* o2);
     PSurface* findSurface(PObject* o1,PObject* o2);
-    void step(dReal dt=-1);
+    void step(dReal dt=-1, bool sync=false);
     void glinit();
     void draw();
     void handleCollisions(dGeomID o1, dGeomID o2);    

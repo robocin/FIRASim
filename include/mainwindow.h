@@ -64,6 +64,7 @@ public slots:
     void sendBuffer();
     void setIsGlEnabled(bool value);
     void withGoalKick(bool value);
+    void fullSpeed(bool value);
 
     int robotIndex(int robot,int team);
 private:

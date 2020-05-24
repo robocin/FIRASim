@@ -42,5 +42,7 @@ int main(int argc, char *argv[])
     }
     if(std::find(argv, argend, std::string("--atkfault")) != argend)
         w.withGoalKick(true);
+    if(std::find(argv, argend, std::string("--xlr8")) != argend)
+        w.fullSpeed(true);
     return QApplication::exec();
 }

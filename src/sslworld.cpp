@@ -570,7 +570,7 @@ void SSLWorld::step(dReal dt)
             last_dt = dt;
 
         selected = -1;
-        p->step(dt * 0.2);
+        p->step(dt * 0.2, fullSpeed);
     }
 
     steps_super++;

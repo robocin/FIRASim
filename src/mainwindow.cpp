@@ -520,3 +520,8 @@ void MainWindow::withGoalKick(bool value)
 {
     glwidget->ssl->withGoalKick = value;
 }
+
+void MainWindow::fullSpeed(bool value)
+{
+    glwidget->ssl->fullSpeed = value;
+}
