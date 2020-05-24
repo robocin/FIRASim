@@ -572,16 +572,9 @@ void SSLWorld::step(dReal dt)
         selected = -1;
         p->step(dt * 0.2);
     }
-    
+
     steps_super++;
     steps++;
-    int tiago = timer_gonca->elapsed();
-    if(tiago>1000){
-        std::cout <<tiago <<"      "<<steps<< "     "<<dt<<"      "<<dt*steps*1000/(float)tiago << std::endl;  
-        timer_gonca->restart();
-        steps = 0;
-    }
-   
 
     int best_k = -1;
     dReal best_dist = 1e8;
@@ -718,8 +711,8 @@ dReal normalizeAngle(dReal a)
 
 Environment *SSLWorld::generatePacket()
 {
-   
-    int t = steps_super*cfg->DeltaTime()*1000;  //timer->elapsed() * 9;
+
+    int t = steps_super * cfg->DeltaTime() * 1000;
     auto *env = new Environment;
     dReal x, y, z, dir, k;
     ball->getBodyPosition(x, y, z);
@@ -753,7 +746,6 @@ Environment *SSLWorld::generatePacket()
         vball->set_vx(ball_vel[0]);
         vball->set_vy(ball_vel[1]);
     }
-    //printf("aqui\n");
     for (uint32_t i = 0; i < cfg->Robots_Count() * 2; i++)
     {
         if (!cfg->vanishing() || (rand0_1() > cfg->blue_team_vanishing()))
@@ -791,8 +783,6 @@ Environment *SSLWorld::generatePacket()
                 // robot_vel[2] = *robot_angular_vel;
             }
             //Robot speed stored in robot_vel. Remember that the sign for linear speed is changed.
-            //printf("aqui\n");
-
             // reset when the robot has turned over
             if (cfg->ResetTurnOver() && k < 0.9)
             {
@@ -835,7 +825,7 @@ SendingPacket::SendingPacket(fira_message::sim_to_ref::Environment *_packet, int
 
 void SSLWorld::sendVisionBuffer()
 {
-    int t = steps_super*cfg->DeltaTime()*1000; //timer->elapsed() * 9;
+    int t = steps_super * cfg->DeltaTime() * 1000;
     sendQueue.push_back(new SendingPacket(generatePacket(), t));
     while (t - sendQueue.front()->t >= cfg->sendDelay())
     {
@@ -870,7 +860,8 @@ void SSLWorld::posProcess()
         goals_yellow++;
         is_goal = true;
     }
-    if(bx<-2 || bx>2 || by>2 || by<-2) out_of_bands = true;
+    if (bx < -2 || bx > 2 || by > 2 || by < -2)
+        out_of_bands = true;
 
 
     bool penalty = false;
@@ -974,7 +965,7 @@ void SSLWorld::posProcess()
     // Fault Detection
     bool fault = false;
     steps_fault++;
-    if (steps_fault*cfg->DeltaTime()*1000 >= 10000)
+    if (steps_fault * cfg->DeltaTime() * 1000 >= 10000)
     {
         if (ball_prev_pos.first == bx &&
             ball_prev_pos.second == by)
@@ -989,17 +980,16 @@ void SSLWorld::posProcess()
         {
             ball_prev_pos.first = bx;
             ball_prev_pos.second = by;
-            steps_fault = 0;//timer_fault->restart();
+            steps_fault = 0; //timer_fault->restart();
         }
     }
 
     // End Time Detection
     time_before = time_after;
-    time_after = (int)(steps_super*cfg->DeltaTime()*1000) / 300000;  //timer->elapsed() * 9 / 300000;
+    time_after = (int)(steps_super * cfg->DeltaTime() * 1000) / 300000;
     bool end_time = time_after != time_before;
 
-    //if(((timer->elapsed() * 9 / 60000) - minute) > 0)
-    if((((int)(steps_super*cfg->DeltaTime()*1000)/ 60000) - minute) > 0)
+    if ((((int)(steps_super * cfg->DeltaTime() * 1000) / 60000) - minute) > 0)
     {
         minute++;
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
@@ -1097,6 +1087,15 @@ void SSLWorld::posProcess()
             {
                 robots[i]->setXY(posX[i]*(-1),posY[i]);
             }
+        }
+        steps_fault = 0;
+        if (end_time)
+        {
+            steps_super = 0;
+            time_before = time_after = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+            minute = 0;
         }
 
     }
