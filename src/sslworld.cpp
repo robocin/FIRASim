@@ -487,7 +487,7 @@ void SSLWorld::step(dReal dt)
             dReal accel = last_speed - ballspeed;
             accel = -accel / dt;
             last_speed = ballspeed;
-            dReal fk = accel * cfg->BallFriction() * cfg->BallMass() * cfg->Gravity();
+            dReal fk = cfg->BallFriction() * cfg->BallMass() * cfg->Gravity(); // * accel;
             ballfx = -fk * ballvel[0] / ballspeed;
             ballfy = -fk * ballvel[1] / ballspeed;
             ballfz = -fk * ballvel[2] / ballspeed;
@@ -892,7 +892,7 @@ void SSLWorld::posProcess()
         getValidPosition(x,y, cfg->Robots_Count() * 2);
         ball->setBodyPosition(x, y, 0);
 
-        timer_fault->restart();
+        steps_fault = 0;
         
     }else if(is_goal || end_time){
         ball->setBodyPosition(0,0,0);
@@ -915,11 +915,15 @@ void SSLWorld::posProcess()
                 robots[i]->setXY(posX[i]*(-1),posY[i]);
             }
         }
-        timer_fault->restart();
-
+        steps_fault = 0;
+        steps_super = 0;
+        time_before = time_after = 0;
+        goals_blue = 0;
+        goals_yellow = 0;
+        minute = 0;
         
     }else if(penalty){
-        timer_fault->restart();
+        steps_fault = 0;
 
         if(side)
         {   
@@ -949,11 +953,11 @@ void SSLWorld::posProcess()
         }
         
     }else if(fault){
-        timer_fault->restart();
+        steps_fault = 0;
 
 
     }else if(goal_shot){
-        timer_fault->restart();
+        steps_fault = 0;
 
         dReal posX[6] = {0.65, 0.48, 0.49, 0.19, 0.18, -0.67};
         dReal posY[6] = {0.11, 0.37, -0.33, 0.13, -0.21, -0.01};
@@ -971,15 +975,6 @@ void SSLWorld::posProcess()
             {
                 robots[i]->setXY(posX[i]*(-1),posY[i]);
             }
-        }
-        steps_fault = 0;
-        if (end_time)
-        {
-            steps_super = 0;
-            time_before = time_after = 0;
-            goals_blue = 0;
-            goals_yellow = 0;
-            minute = 0;
         }
 
     }
