@@ -487,7 +487,7 @@ void SSLWorld::step(dReal dt)
             dReal accel = last_speed - ballspeed;
             accel = -accel / dt;
             last_speed = ballspeed;
-            dReal fk = cfg->BallFriction() * cfg->BallMass() * cfg->Gravity(); // * accel;
+            dReal fk = accel * cfg->BallFriction() * cfg->BallMass() * cfg->Gravity();
             ballfx = -fk * ballvel[0] / ballspeed;
             ballfy = -fk * ballvel[1] / ballspeed;
             ballfz = -fk * ballvel[2] / ballspeed;
@@ -891,11 +891,15 @@ void SSLWorld::posProcess()
         }        
         getValidPosition(x,y, cfg->Robots_Count() * 2);
         ball->setBodyPosition(x, y, 0);
-
+        dBodySetLinearVel(ball->body, 0, 0, 0);
+        dBodySetAngularVel(ball->body, 0, 0, 0);
         steps_fault = 0;
         
     }else if(is_goal || end_time){
         ball->setBodyPosition(0,0,0);
+        dBodySetLinearVel(ball->body, 0, 0, 0);
+        dBodySetAngularVel(ball->body, 0, 0, 0);
+
         if(side)
         {
             dReal posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71};
@@ -931,6 +935,8 @@ void SSLWorld::posProcess()
             dReal posY[6] = {-0.01, 0.23, -0.33, 0.02, 0.48, 0.01};
 
             ball->setBodyPosition(-0.47,-0.01,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
 
             for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
             {
@@ -944,7 +950,8 @@ void SSLWorld::posProcess()
             
 
             ball->setBodyPosition(0.47,-0.01,0);
-
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
             for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
             {
                 robots[i]->setXY(posX[i],posY[i]);
@@ -964,6 +971,8 @@ void SSLWorld::posProcess()
         if(side)
         {
             ball->setBodyPosition(0.61, 0.11,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
             for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
             {
                 robots[i]->setXY(posX[i],posY[i]);
@@ -971,6 +980,8 @@ void SSLWorld::posProcess()
         }else
         {
             ball->setBodyPosition(-0.61, 0.11,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
             for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
             {
                 robots[i]->setXY(posX[i]*(-1),posY[i]);
