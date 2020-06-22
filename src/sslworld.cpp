@@ -849,24 +849,45 @@ void SSLWorld::posProcess()
     // Fault Detection
     bool fault = false;
     steps_fault++;
+    int quadrant = 0;
     if (steps_fault * cfg->DeltaTime() * 1000 >= 10000)
     {
-        if (ball_prev_pos.first == bx &&
-            ball_prev_pos.second == by)
-            fault = true;
+        if (fabs(ball_prev_pos.first - bx) < 0.0001 &&
+            fabs(ball_prev_pos.second - by) < 0.0001){
+            if ((bx < -0.6) && abs(by < 0.35)){
+                penalty = true;
+                side = true;                
+            }else if(bx > 0.6 && abs(by < 0.35)){
+
+                penalty = true;
+                side = false;
+            }else{
+                fault = true;
+                if(bx < 0 && by < 0){
+                   quadrant = 0;
+                }else if(bx < 0 && by > 0){
+                    quadrant = 1;
+                }else if(bx > 0 && by < 0){
+                    quadrant = 2;
+                }else if(bx > 0 && by > 0){
+                    quadrant = 3;
+                }
+            }
+        }
         ball_prev_pos.first = bx;
         ball_prev_pos.second = by;
+        steps_fault = 0;
     }
     else
-    {
-        if (ball_prev_pos.first != bx ||
-            ball_prev_pos.second != by)
+    {   
+        if (fabs(ball_prev_pos.first - bx) > 0.0001 ||
+            fabs(ball_prev_pos.second - by) > 0.0001)
         {
-            ball_prev_pos.first = bx;
-            ball_prev_pos.second = by;
             steps_fault = 0;
         }
     }
+    ball_prev_pos.first = bx;
+    ball_prev_pos.second = by;
 
     // End Time Detection
     time_before = time_after;
@@ -895,6 +916,59 @@ void SSLWorld::posProcess()
         dBodySetAngularVel(ball->body, 0, 0, 0);
         steps_fault = 0;
         
+    }else if(fault){
+        if(quadrant == 0){
+            ball->setBodyPosition(-0.375,-0.4,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
+
+            dReal posX[6] = {-0.575,-0.44,-0.71,-0.175,-0.3,0.71};
+            dReal posY[6] = {-0.4,0.13,-0.02,-0.4,0.13,-0.02};
+            
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i],posY[i]);
+            }
+
+        }else if(quadrant == 1){
+            ball->setBodyPosition(-0.375,0.4,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
+
+            dReal posX[6] = {-0.575,-0.44,-0.71,-0.175,-0.30,0.71};
+            dReal posY[6] = {0.4,-0.13,-0.02,0.4,-0.13,-0.02};
+            
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i],posY[i]);
+            }
+        }else if(quadrant == 2){
+            ball->setBodyPosition(0.375,-0.4,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
+
+            dReal posX[6] = {0.175,0.3,-0.71,0.575,0.44,0.71};
+            dReal posY[6] = {-0.4,0.13,-0.02,-0.4,0.13,-0.02};
+            
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i],posY[i]);
+            }
+        }else{
+            ball->setBodyPosition(0.375,0.4,0);
+            dBodySetLinearVel(ball->body, 0, 0, 0);
+            dBodySetAngularVel(ball->body, 0, 0, 0);
+
+            dReal posX[6] = {0.175,0.3,-0.71,0.575,0.44,0.71};
+            dReal posY[6] = {0.4,-0.13,-0.02,0.4,-0.13,-0.02};
+            
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i],posY[i]);
+            }
+        }
+        steps_fault = 0;
+
     }else if(is_goal || end_time){
         ball->setBodyPosition(0,0,0);
         dBodySetLinearVel(ball->body, 0, 0, 0);
@@ -927,6 +1001,7 @@ void SSLWorld::posProcess()
         minute = 0;
         
     }else if(penalty){
+
         steps_fault = 0;
 
         if(side)
@@ -959,11 +1034,8 @@ void SSLWorld::posProcess()
             }
         }
         
-    }else if(fault){
-        steps_fault = 0;
-
-
     }else if(goal_shot){
+
         steps_fault = 0;
 
         dReal posX[6] = {0.65, 0.48, 0.49, 0.19, 0.18, -0.67};
