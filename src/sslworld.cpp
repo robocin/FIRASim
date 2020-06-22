@@ -849,7 +849,7 @@ void SSLWorld::posProcess()
     // Fault Detection
     bool fault = false;
     steps_fault++;
-    int quadrant = 0;
+    int quadrant = 4;
     if (steps_fault * cfg->DeltaTime() * 1000 >= 10000)
     {
         if (fabs(ball_prev_pos.first - bx) < 0.0001 &&
@@ -863,13 +863,13 @@ void SSLWorld::posProcess()
                 side = false;
             }else{
                 fault = true;
-                if(bx < 0 && by < 0){
+                if(bx < 0 && by <= 0){
                    quadrant = 0;
-                }else if(bx < 0 && by > 0){
+                }else if(bx < 0 && by >= 0){
                     quadrant = 1;
-                }else if(bx > 0 && by < 0){
+                }else if(bx > 0 && by <= 0){
                     quadrant = 2;
-                }else if(bx > 0 && by > 0){
+                }else if(bx > 0 && by >= 0){
                     quadrant = 3;
                 }
             }
@@ -954,7 +954,7 @@ void SSLWorld::posProcess()
             {
                 robots[i]->setXY(posX[i],posY[i]);
             }
-        }else{
+        }else if(quadrant == 3){
             ball->setBodyPosition(0.375,0.4,0);
             dBodySetLinearVel(ball->body, 0, 0, 0);
             dBodySetAngularVel(ball->body, 0, 0, 0);
