@@ -103,7 +103,7 @@ public:
     QUdpSocket *commandSocket{};
     bool updatedCursor;
     bool withGoalKick = false;
-    bool randomStart = true;
+    bool randomStart = false;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault;
     bool received = true;

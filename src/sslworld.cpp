@@ -726,7 +726,7 @@ Environment *SSLWorld::generatePacket()
                 rob = env->mutable_frame()->add_robots_blue();
             else
                 rob = env->mutable_frame()->add_robots_yellow();
-            rob->set_robot_id(i - cfg->Robots_Count());
+                
             if (i >= cfg->Robots_Count())
                 rob->set_robot_id(i - cfg->Robots_Count());
             else
@@ -891,10 +891,10 @@ void SSLWorld::posProcess()
 
     // End Time Detection
     time_before = time_after;
-    time_after = (int)(steps_super * cfg->DeltaTime() * 1000) / 300000;
+    time_after = (int)((steps_super * cfg->DeltaTime() * 1000) / 300000);
     bool end_time = time_after != time_before;
 
-    if ((((int)(steps_super * cfg->DeltaTime() * 1000) / 60000) - minute) > 0)
+    if (((int)((steps_super * cfg->DeltaTime() * 1000) / 60000) - minute) > 0)
     {
         minute++;
         std::cout << "****************** " << minute << " Minutes ****************" << std::endl;
@@ -993,12 +993,16 @@ void SSLWorld::posProcess()
                 robots[i]->setXY(posX[i]*(-1),posY[i]);
             }
         }
-        steps_fault = 0;
-        steps_super = 0;
-        time_before = time_after = 0;
-        goals_blue = 0;
-        goals_yellow = 0;
-        minute = 0;
+        if(end_time)
+        {
+            steps_fault = 0;
+            steps_super = 0;
+            time_before = time_after = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+            minute = 0;
+        }
+        
         
     }else if(penalty){
 
