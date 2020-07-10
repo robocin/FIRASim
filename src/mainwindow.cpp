@@ -85,15 +85,18 @@ MainWindow::MainWindow(QWidget *parent)
     robotwidget = new RobotWidget(this, configwidget);
     /* Status Bar */
     fpslabel = new QLabel(this);
+    scorelabel = new QLabel(this);
     cursorlabel = new QLabel(this);
     selectinglabel = new QLabel(this);
     vanishlabel = new QLabel("Vanishing",this);
     noiselabel = new QLabel("Gaussian noise",this);
     fpslabel->setFrameStyle(QFrame::Panel);
+    scorelabel->setFrameStyle(QFrame::Panel);
     cursorlabel->setFrameStyle(QFrame::Panel);
     selectinglabel->setFrameStyle(QFrame::Panel);
     vanishlabel->setFrameStyle(QFrame::Panel);
     noiselabel->setFrameStyle(QFrame::Panel);
+    statusBar()->addWidget(scorelabel);
     statusBar()->addWidget(fpslabel);
     statusBar()->addWidget(cursorlabel);
     statusBar()->addWidget(selectinglabel);
@@ -332,6 +335,7 @@ void MainWindow::update()
     lvv[1]=vv[1];
     lvv[2]=vv[2];
     QString ss;
+    scorelabel->setText(QString("BLUE %1 x %2 YELLOW").arg(glwidget->ssl->goals_blue).arg(glwidget->ssl->goals_yellow));
     fpslabel->setText(QString("Frame rate: %1 fps").arg(ss.sprintf("%06.2f",glwidget->getFPS())));        
     if (glwidget->ssl->selected!=-1)
     {
