@@ -60,9 +60,7 @@ private:
     QList<SendingPacket*> sendQueue;
     char *in_buffer;
     bool lastInfraredState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
-    int time_before = 0;
-    int time_after = 0;
-    int steps, steps_super, steps_fault;
+    int steps_super, steps_fault;
     KickStatus lastKickState[TEAM_COUNT][MAX_ROBOT_COUNT]{};
 
     void getValidPosition(dReal &x, dReal &y, uint32_t max);
@@ -103,7 +101,7 @@ public:
     QUdpSocket *commandSocket{};
     bool updatedCursor;
     bool withGoalKick = false;
-    bool randomStart = true;
+    bool randomStart = false;
     CRobot* robots[MAX_ROBOT_COUNT*2]{};
     QElapsedTimer *timer, *timer_fault;
     bool received = true;

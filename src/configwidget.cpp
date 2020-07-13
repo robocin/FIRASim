@@ -98,10 +98,10 @@ ConfigWidget::ConfigWidget()
   world.push_back(phys_vars);
     VarListPtr worldp_vars(new VarList("World"));
     phys_vars->addChild(worldp_vars);  
-        ADD_VALUE(worldp_vars,Double,DesiredFPS,800,"Desired FPS")
+        ADD_VALUE(worldp_vars,Double,DesiredFPS,60,"Desired FPS")
         ADD_VALUE(worldp_vars,Bool,SyncWithGL,false,"Synchronize ODE with OpenGL")
-        ADD_VALUE(worldp_vars, Bool, SyncWithPython, true, "Synchronize SimStep with python " )
-        ADD_VALUE(worldp_vars,Double,DeltaTime,0.03,"ODE time step")
+        ADD_VALUE(worldp_vars, Bool, SyncWithPython, false, "Synchronize SimStep with python " )
+        ADD_VALUE(worldp_vars,Double,DeltaTime,0.016,"ODE time step")
         ADD_VALUE(worldp_vars,Double,Gravity,9.8,"Gravity")
         ADD_VALUE(worldp_vars,Bool,ResetTurnOver,true,"Auto reset turn-over")
   VarListPtr ballp_vars(new VarList("Ball"));

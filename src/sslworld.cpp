@@ -141,7 +141,6 @@ bool ballCallBack(dGeomID o1, dGeomID o2, PSurface *s, int /*robots_count*/)
 SSLWorld::SSLWorld(QGLWidget *parent, ConfigWidget *_cfg, RobotsFormation *form)
     : QObject(parent)
 {
-    steps = 0;
     steps_super = 0;
     steps_fault = 0;
     isGLEnabled = true;
@@ -507,7 +506,6 @@ void SSLWorld::step(dReal dt)
     }
 
     steps_super++;
-    steps++;
 
     int best_k = -1;
     dReal best_dist = 1e8;
@@ -967,7 +965,48 @@ void SSLWorld::posProcess()
         ball->setBodyPosition(x, y, 0);
         dBodySetLinearVel(ball->body, 0, 0, 0);
         dBodySetAngularVel(ball->body, 0, 0, 0);
-        steps_fault = 0;
+
+       steps_fault = 0;
+        if(end_time){
+            steps_super = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+            minute = 0;
+        }
+        
+        
+    }else if(is_goal || end_time){
+        ball->setBodyPosition(0,0,0);
+        dBodySetLinearVel(ball->body, 0, 0, 0);
+        dBodySetAngularVel(ball->body, 0, 0, 0);
+
+        if(side)
+        {
+            dReal posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71};
+            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+            
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i]*(-1),posY[i]);
+            }
+            
+        }else
+        {
+            dReal posX[6] = {0.08,0.35,0.71,-0.15,-0.35,-0.71};
+            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
+            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
+            {
+                robots[i]->setXY(posX[i]*(-1),posY[i]);
+            }
+        }if(end_time){
+            steps_fault = 0;
+            steps_super = 0;
+            goals_blue = 0;
+            goals_yellow = 0;
+            minute = 0;
+        }
+        
+        
         
     }else if(fault){
         if(quadrant == 0){
@@ -1022,37 +1061,6 @@ void SSLWorld::posProcess()
         }
         steps_fault = 0;
 
-    }else if(is_goal || end_time){
-        ball->setBodyPosition(0,0,0);
-        dBodySetLinearVel(ball->body, 0, 0, 0);
-        dBodySetAngularVel(ball->body, 0, 0, 0);
-
-        if(side)
-        {
-            dReal posX[6] = {0.15,0.35,0.71,-0.08,-0.35,-0.71};
-            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
-            
-            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
-            {
-                robots[i]->setXY(posX[i]*(-1),posY[i]);
-            }
-            
-        }else
-        {
-            dReal posX[6] = {0.08,0.35,0.71,-0.15,-0.35,-0.71};
-            dReal posY[6] = {0.02,0.13,-0.02,0.02,0.13,-0.02};
-            for (uint32_t i = 0; i < cfg->Robots_Count()*2; i++)
-            {
-                robots[i]->setXY(posX[i]*(-1),posY[i]);
-            }
-        }
-        steps_fault = 0;
-        steps_super = 0;
-        time_before = time_after = 0;
-        goals_blue = 0;
-        goals_yellow = 0;
-        minute = 0;
-        
     }else if(penalty){
 
         steps_fault = 0;
