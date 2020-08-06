@@ -808,7 +808,7 @@ void SSLWorld::posProcess()
                 continue;
             dReal rx, ry;
             robots[num]->getXY(rx, ry);
-            if (rx < -0.6 && abs(ry < 0.35))
+            if (rx < -0.6 && abs(ry) < 0.35)
             {
                 if (one_in_pen_area){
                     penalty = true;
@@ -856,7 +856,7 @@ void SSLWorld::posProcess()
                 continue;
             dReal rx, ry;
             robots[num]->getXY(rx, ry);
-            if (rx > 0.6 && abs(ry < 0.35))
+            if (rx > 0.6 && abs(ry) < 0.35)
             {
                 if (one_in_pen_area){
                     penalty = true;
