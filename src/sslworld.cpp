@@ -797,7 +797,7 @@ void SSLWorld::posProcess()
 
     bool penalty = false;
     bool goal_shot = false;
-    if (bx < -0.6 && abs(by < 0.35))
+    if (bx < -0.6 && abs(by) < 0.35)
     {
 	    // Penalti Detection
         bool one_in_pen_area = false;
@@ -830,7 +830,7 @@ void SSLWorld::posProcess()
 		            continue;
 		        dReal rx, ry;
 		        robots[num]->getXY(rx, ry);
-		        if (rx < -0.6 && abs(ry < 0.35))
+		        if (rx < -0.6 && abs(ry) < 0.35)
 		        {
 		            if (one_in_enemy_area){
                         goal_shot = true;
@@ -845,7 +845,7 @@ void SSLWorld::posProcess()
     }
 
    
-    if (bx > 0.6 && abs(by < 0.35))
+    if (bx > 0.6 && abs(by) < 0.35)
     {
 	    // Penalti Detection
         bool one_in_pen_area = false;
@@ -878,7 +878,7 @@ void SSLWorld::posProcess()
 		            continue;
 		        dReal rx, ry;
 		        robots[num]->getXY(rx, ry);
-		        if (rx > 0.6 && abs(ry < 0.35))
+		        if (rx > 0.6 && abs(ry) < 0.35)
 		        {
 		            if (one_in_enemy_area){
                         goal_shot = true;
@@ -900,10 +900,10 @@ void SSLWorld::posProcess()
     {
         if (fabs(ball_prev_pos.first - bx) < 0.0001 &&
             fabs(ball_prev_pos.second - by) < 0.0001){
-            if ((bx < -0.6) && abs(by < 0.35)){
+            if ((bx < -0.6) && abs(by) < 0.35){
                 penalty = true;
                 side = true;                
-            }else if(bx > 0.6 && abs(by < 0.35)){
+            }else if(bx > 0.6 && abs(by) < 0.35){
 
                 penalty = true;
                 side = false;
