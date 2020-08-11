@@ -253,7 +253,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     this->showMaximized();
-    this->setWindowTitle("grSim");
+    this->setWindowTitle("FIRASim");
 
     robotwidget->teamCombo->setCurrentIndex(0);
     robotwidget->robotCombo->setCurrentIndex(0);
