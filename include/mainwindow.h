@@ -37,6 +37,7 @@ public:
     ~MainWindow() override;
 public slots:
     void update();
+    void updateTimeout();
     void updateRobotLabel();
     void showHideConfig(bool v);
     void showHideSimulator(bool v);
@@ -69,6 +70,7 @@ public slots:
     int robotIndex(int robot,int team);
 private:
     int getInterval();    
+    int timeoutCounter;
     QTimer *timer;
     QMdiArea* workspace;
     GLWidget *glwidget;

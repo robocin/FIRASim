@@ -165,10 +165,12 @@ MainWindow::MainWindow(QWidget *parent)
     glwidget->setWindowState(Qt::WindowMaximized);
 
     timer = new QTimer(this);
-    timer->setInterval(getInterval());
+    timer->setInterval(25);
+    timeoutCounter = 0;
 
 
-    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(updateTimeout()));
+    QObject::connect(glwidget->ssl, SIGNAL(receivedPacket()), this, SLOT(update()));
     //QObject::connect(commandSocket,SIGNAL(readyRead()),this,SLOT(update()));
     //QObject::connect(timer, SIGNAL(timeout()), this, SLOT(sendBuffer()));
     QObject::connect(takeSnapshotAct, SIGNAL(triggered(bool)), this, SLOT(takeSnapshot()));
@@ -313,8 +315,21 @@ QString dRealToStr(dReal a)
     return s;
 }
 
+void MainWindow::updateTimeout()
+{
+    if(timeoutCounter > 0)
+    {
+        update();
+    }
+    else
+    {
+        timeoutCounter++;
+    }
+}
+
 void MainWindow::update()
 {
+    timeoutCounter = 0;
     if (glwidget->ssl->g->isGraphicsEnabled()) glwidget->updateGL();
     else glwidget->step();
 

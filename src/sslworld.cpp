@@ -598,7 +598,6 @@ void SSLWorld::recvActions()
                     robots[id]->setSpeed(0, -1 * robot_cmd.wheel_left());
                     robots[id]->setSpeed(1, robot_cmd.wheel_right());
                 }
-                received = true;
             }
             if (packet.has_replace())
             {
@@ -629,6 +628,7 @@ void SSLWorld::recvActions()
                     dBodySetAngularVel(ball->body, 0, 0, 0);
                 }
             }
+            emit receivedPacket();
         }
     }
 }
