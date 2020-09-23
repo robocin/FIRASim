@@ -34,6 +34,7 @@ Copyright (C) 2011, Parsian Robotic Center (eew.aut.ac.ir/~parsian/grsim)
 
 using namespace fira_message::sim_to_ref;
 
+
 #define WHEEL_COUNT 2
 
 SSLWorld *_w;
@@ -570,7 +571,8 @@ void SSLWorld::step(dReal dt)
         g->finalizeScene();
 
     sendVisionBuffer();
-    posProcess();
+    //Internal Arbiter. Not used.
+    //posProcess();
     frame_num++;
     received = false;
 }
