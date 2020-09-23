@@ -116,7 +116,7 @@ ConfigWidget::ConfigWidget()
   VarListPtr comm_vars(new VarList("Communication"));
   world.push_back(comm_vars);
     ADD_VALUE(comm_vars,String,VisionMulticastAddr,"224.0.0.1","Vision multicast address")  //LocalHost
-    ADD_VALUE(comm_vars,Int,VisionMulticastPort,10020,"Vision multicast port")
+    ADD_VALUE(comm_vars,Int,VisionMulticastPort,10002,"Vision multicast port")
     ADD_VALUE(comm_vars,Int,CommandListenPort,20011,"Command listen port")
     ADD_VALUE(comm_vars,Int,BlueStatusSendPort,30011,"Blue Team status send port")
     ADD_VALUE(comm_vars,Int,YellowStatusSendPort,30012,"Yellow Team status send port")
@@ -134,7 +134,6 @@ ConfigWidget::ConfigWidget()
         ADD_VALUE(vanishing_vars,Double,blue_team_vanishing,0,"Blue team")
         ADD_VALUE(vanishing_vars,Double,yellow_team_vanishing,0,"Yellow team")
         ADD_VALUE(vanishing_vars,Double,ball_vanishing,0,"Ball")
-    // world=VarXML::read(world,(QDir::homePath() + QString("/.grsim.xml")).toStdString());
 
 
     QDir dir;
