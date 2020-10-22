@@ -177,3 +177,12 @@ sudo ldconfig
 ## Notes on the performance
 
 When running FIRASim, check the FPS in the status bar. If it is running at **60 FPS** or higher, everything is ok. Otherwise check the graphics card's driver installation and OpenGL settings.
+
+## Notes on Linux firewall
+
+If you have some communication issues, try to allow the UDP connection to through the firewall.
+Example using UFW (Uncomplicated Firewall)
+```bash
+sudo ufw allow 10002/udp
+sudo ufw allow from 224.0.0.1
+```
