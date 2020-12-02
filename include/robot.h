@@ -103,6 +103,6 @@ public:
     PWorld *getWorld();
 };
 
-#define ROBOT_START_Z(cfg) ((cfg)->robotSettings.RobotHeight * 0.5 + (cfg)->robotSettings.WheelRadius * 1 + (cfg)->robotSettings.BottomHeight)
+#define ROBOT_START_Z(cfg) ((cfg)->robotSettings.RobotHeight * 0.5 + (cfg)->robotSettings.BottomHeight)
 
 #endif // ROBOT_H
