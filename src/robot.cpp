@@ -114,14 +114,6 @@ CRobot::CRobot(PWorld *world, PBall *ball, ConfigWidget *_cfg, dReal x, dReal y,
     chassis->space = space;
     w->addObject(chassis);
 
-    dummy = new PBox(x, y, z, cfg->robotSettings.RobotRadius * 2, cfg->robotSettings.RobotRadius * 2, cfg->robotSettings.RobotHeight, cfg->robotSettings.BodyMass * 0.99f, r, g, b, rob_id, true);
-    dummy->setVisibility(false);
-    dummy->space = space;
-    w->addObject(dummy);
-
-    dummy_to_chassis = dJointCreateFixed(world->world, nullptr);
-    dJointAttach(dummy_to_chassis, chassis->body, dummy->body);
-
     wheels[0] = new Wheel(this, 0, cfg->robotSettings.Wheel1Angle, cfg->robotSettings.Wheel1Angle, wheeltexid);
     wheels[1] = new Wheel(this, 1, cfg->robotSettings.Wheel2Angle, cfg->robotSettings.Wheel2Angle, wheeltexid);
     balls[0] = new RBall(this, 0, cfg->robotSettings.Wheel1Angle + 90, cfg->robotSettings.Wheel1Angle + 90);
@@ -237,8 +229,6 @@ void CRobot::resetRobot()
     resetSpeeds();
     dBodySetLinearVel(chassis->body, 0, 0, 0);
     dBodySetAngularVel(chassis->body, 0, 0, 0);
-    dBodySetLinearVel(dummy->body, 0, 0, 0);
-    dBodySetAngularVel(dummy->body, 0, 0, 0);
     for (auto &wheel : wheels)
     {
         dBodySetLinearVel(wheel->cyl->body, 0, 0, 0);
@@ -287,7 +277,6 @@ void CRobot::setXY(dReal x, dReal y)
     dReal height = ROBOT_START_Z(cfg);
     chassis->getBodyPosition(xx, yy, zz);
     chassis->setBodyPosition(x, y, height);
-    dummy->setBodyPosition(x, y, height);
     for (auto &wheel : wheels)
     {
         wheel->cyl->getBodyPosition(kx, ky, kz);
@@ -299,7 +288,6 @@ void CRobot::setDir(dReal ang)
 {
     ang *= M_PI / 180.0f;
     chassis->setBodyRotation(0, 0, 1, ang);
-    dummy->setBodyRotation(0, 0, 1, ang);
     dMatrix3 wLocalRot, wRot, cRot;
     dVector3 localPos, finalPos, cPos;
     chassis->getBodyPosition(cPos[0], cPos[1], cPos[2], false);
