@@ -32,7 +32,7 @@ CRobot::Wheel::Wheel(CRobot *robot, int _id, dReal ang, dReal ang2, int wheeltex
     dReal z = rob->m_z;
     dReal centerx = x + rad * cos(ang2);
     dReal centery = y + rad * sin(ang2);
-    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.WheelRadius - rob->cfg->robotSettings.BottomHeight;
+    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.WheelRadius - rob->cfg->robotSettings.BottomHeight - 0.000187;
     cyl = new PCylinder(centerx, centery, centerz, rob->cfg->robotSettings.WheelRadius, rob->cfg->robotSettings.WheelThickness, rob->cfg->robotSettings.WheelMass, 0.9, 0.9, 0.9, wheeltexid);
     cyl->setRotation(-sin(ang), cos(ang), 0, M_PI * 0.5);
     cyl->setBodyRotation(-sin(ang), cos(ang), 0, M_PI * 0.5, true);    //set local rotation matrix
@@ -67,6 +67,7 @@ CRobot::RBall::RBall(CRobot *robot, int _id, dReal ang, dReal ang2)
     id = _id;
     rob = robot;
     dReal rad = rob->cfg->robotSettings.RobotRadius - rob->cfg->robotSettings.BallRadius;
+    rad = sqrt((rad * rad) * 2);
     ang *= M_PI / 180.0f;
     ang2 *= M_PI / 180.0f;
     dReal x = rob->m_x;
@@ -74,7 +75,7 @@ CRobot::RBall::RBall(CRobot *robot, int _id, dReal ang, dReal ang2)
     dReal z = rob->m_z;
     dReal centerx = x + rad * cos(ang2);
     dReal centery = y + rad * sin(ang2);
-    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.BallRadius - rob->cfg->robotSettings.BottomHeight;
+    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.BallRadius - rob->cfg->robotSettings.BottomHeight;// + 0.000186944;
     pBall = new PBall(centerx, centery, centerz, rob->cfg->robotSettings.BallRadius, rob->cfg->robotSettings.BallMass, 1, 0, 0);
     pBall->setRotation(-sin(ang), cos(ang), 0, M_PI * 0.5);
     pBall->setBodyRotation(-sin(ang), cos(ang), 0, M_PI * 0.5, true);    //set local rotation matrix
@@ -116,8 +117,11 @@ CRobot::CRobot(PWorld *world, PBall *ball, ConfigWidget *_cfg, dReal x, dReal y,
 
     wheels[0] = new Wheel(this, 0, cfg->robotSettings.Wheel1Angle, cfg->robotSettings.Wheel1Angle, wheeltexid);
     wheels[1] = new Wheel(this, 1, cfg->robotSettings.Wheel2Angle, cfg->robotSettings.Wheel2Angle, wheeltexid);
-    balls[0] = new RBall(this, 0, cfg->robotSettings.Wheel1Angle + 90, cfg->robotSettings.Wheel1Angle + 90);
-    balls[1] = new RBall(this, 1, cfg->robotSettings.Wheel2Angle + 90, cfg->robotSettings.Wheel2Angle + 90);
+    balls[0] = new RBall(this, 0, 45, 45);
+    balls[1] = new RBall(this, 1, -45, -45);
+    balls[2] = new RBall(this, 2, 135, 135);
+    balls[3] = new RBall(this, 3, -135, -135);
+
     firsttime = true;
     on = turn_on;
 }
@@ -247,6 +251,22 @@ void CRobot::getXY(dReal &x, dReal &y)
 {
     dReal xx, yy, zz;
     chassis->getBodyPosition(xx, yy, zz);
+    if (getID() == 0) {
+        std::cout << zz << '\n';
+        dReal xb, yb, zb;
+        balls[0]->pBall->getBodyPosition(xb, yb, zb);
+        std::cout << zb << " ball0 z\n";
+        balls[1]->pBall->getBodyPosition(xb, yb, zb);
+        std::cout << zb << " ball1 z\n";
+        balls[2]->pBall->getBodyPosition(xb, yb, zb);
+        std::cout << zb << " ball2 z\n";
+        balls[3]->pBall->getBodyPosition(xb, yb, zb);
+        std::cout << zb << " ball3 z\n";
+        wheels[0]->cyl->getBodyPosition(xb, yb, zb);
+        std::cout << zb << " wheel0 z\n";
+        wheels[1]->cyl->getBodyPosition(xb, yb, zb);
+        std::cout << zb << " wheel1 z\n";
+    }
     x = xx;
     y = yy;
 }

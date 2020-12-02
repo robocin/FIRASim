@@ -24,6 +24,7 @@ Copyright (C) 2011, Parsian Robotic Center (eew.aut.ac.ir/~parsian/grsim)
 #include "physics/pbox.h"
 #include "physics/pball.h"
 #include "configwidget.h"
+#include <iostream>
 
 #define ROBOT_GRAY 0.4
 
@@ -78,7 +79,7 @@ public:
         PBall *pBall;
         dReal speed;
         CRobot *rob;
-    } * balls[2]{};
+    } * balls[4]{};
 
     CRobot(PWorld *world, PBall *ball, ConfigWidget *_cfg, dReal x, dReal y, dReal z,
            dReal r, dReal g, dReal b, int rob_id, int wheeltexid, int dir, bool turn_on);
