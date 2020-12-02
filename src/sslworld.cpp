@@ -463,9 +463,17 @@ void SSLWorld::step(dReal dt)
     if (customDT > 0)
         dt = customDT;
 
+
     const auto ratio = m_parent->devicePixelRatio();
     if (isGLEnabled)
         g->initScene(m_parent->width() * ratio, m_parent->height() * ratio, 0, 0.7, 1);
+
+    for (int k = 0; k < cfg->Robots_Count() * 2; k++)
+    {
+        robots[k]->step();
+        robots[k]->selected = false;
+    }
+
     // Pq ele faz isso 5 vezes?
     // - Talvez mais precisao (Ele sempre faz um step de dt*0.2 )
     for (int kk = 0; kk < 5; kk++)
@@ -537,11 +545,6 @@ void SSLWorld::step(dReal dt)
         robots[best_k]->chassis->setColor(ROBOT_GRAY * 2, ROBOT_GRAY * 1.5, ROBOT_GRAY * 1.5);
     selected = best_k;
     ball->tag = -1;
-    for (int k = 0; k < cfg->Robots_Count() * 2; k++)
-    {
-        robots[k]->step();
-        robots[k]->selected = false;
-    }
     if (g->isGraphicsEnabled())
     {
         p->draw();
