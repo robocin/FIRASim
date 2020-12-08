@@ -32,7 +32,7 @@ CRobot::Wheel::Wheel(CRobot *robot, int _id, dReal ang, dReal ang2, int wheeltex
     dReal z = rob->m_z;
     dReal centerx = x + rad * cos(ang2);
     dReal centery = y + rad * sin(ang2);
-    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.WheelRadius - rob->cfg->robotSettings.BottomHeight - 0.000187;
+    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.WheelRadius - rob->cfg->robotSettings.BottomHeight;
     cyl = new PCylinder(centerx, centery, centerz, rob->cfg->robotSettings.WheelRadius, rob->cfg->robotSettings.WheelThickness, rob->cfg->robotSettings.WheelMass, 0.9, 0.9, 0.9, wheeltexid);
     cyl->setRotation(-sin(ang), cos(ang), 0, M_PI * 0.5);
     cyl->setBodyRotation(-sin(ang), cos(ang), 0, M_PI * 0.5, true);    //set local rotation matrix
@@ -75,7 +75,7 @@ CRobot::RBall::RBall(CRobot *robot, int _id, dReal ang, dReal ang2)
     dReal z = rob->m_z;
     dReal centerx = x + rad * cos(ang2);
     dReal centery = y + rad * sin(ang2);
-    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.BallRadius - rob->cfg->robotSettings.BottomHeight;// + 0.000186944;
+    dReal centerz = z - rob->cfg->robotSettings.RobotHeight * 0.5 + rob->cfg->robotSettings.BallRadius - rob->cfg->robotSettings.BottomHeight + 0.0001;
     pBall = new PBall(centerx, centery, centerz, rob->cfg->robotSettings.BallRadius, rob->cfg->robotSettings.BallMass, 1, 0, 0);
     pBall->setRotation(-sin(ang), cos(ang), 0, M_PI * 0.5);
     pBall->setBodyRotation(-sin(ang), cos(ang), 0, M_PI * 0.5, true);    //set local rotation matrix
