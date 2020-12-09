@@ -1170,9 +1170,9 @@ RobotsFormation::RobotsFormation(int type, ConfigWidget *_cfg) : cfg(_cfg)
     }
     if (type == 1) // formation 1
     {
-        dReal teamPosX[MAX_ROBOT_COUNT] = {1.5, 1.5, 1.5, 0.55, 2.5, 3.6,
+        dReal teamPosX[MAX_ROBOT_COUNT] = {0.6, 0.5, 0.4, 0.55, 2.5, 3.6,
                                            3.2, 3.2, 3.2, 3.2, 3.2, 3.2};
-        dReal teamPosY[MAX_ROBOT_COUNT] = {1.12, 0.0, -1.12, 0.0, 0.0, 0.0,
+        dReal teamPosY[MAX_ROBOT_COUNT] = {0.0, 0.5, 0.5, 0.0, 0.0, 0.0,
                                            0.75, -0.75, 1.5, -1.5, 2.25, -2.25};
         setAll(teamPosX, teamPosY);
     }
@@ -1186,9 +1186,9 @@ RobotsFormation::RobotsFormation(int type, ConfigWidget *_cfg) : cfg(_cfg)
     }
     if (type == 3) // outside field
     {
-        dReal teamPosX[MAX_ROBOT_COUNT] = {0.4, 0.8, 1.2, 1.6, 2.0, 2.4,
+        dReal teamPosX[MAX_ROBOT_COUNT] = {0.6, 0.5, 0.4, 1.6, 2.0, 2.4,
                                            2.8, 3.2, 3.6, 4.0, 4.4, 4.8};
-        dReal teamPosY[MAX_ROBOT_COUNT] = {-4.0, -4.0, -4.0, -4.0, -4.0, -4.0,
+        dReal teamPosY[MAX_ROBOT_COUNT] = {0.5, 0.5, 0.5, -4.0, -4.0, -4.0,
                                            -4.0, -4.0, -4.0, -4.0, -4.0, -4.0};
         setAll(teamPosX, teamPosY);
     }

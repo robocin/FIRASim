@@ -251,22 +251,22 @@ void CRobot::getXY(dReal &x, dReal &y)
 {
     dReal xx, yy, zz;
     chassis->getBodyPosition(xx, yy, zz);
-    if (getID() == 0) {
-        std::cout << zz << '\n';
-        dReal xb, yb, zb;
-        balls[0]->pBall->getBodyPosition(xb, yb, zb);
-        std::cout << zb << " ball0 z\n";
-        balls[1]->pBall->getBodyPosition(xb, yb, zb);
-        std::cout << zb << " ball1 z\n";
-        balls[2]->pBall->getBodyPosition(xb, yb, zb);
-        std::cout << zb << " ball2 z\n";
-        balls[3]->pBall->getBodyPosition(xb, yb, zb);
-        std::cout << zb << " ball3 z\n";
-        wheels[0]->cyl->getBodyPosition(xb, yb, zb);
-        std::cout << zb << " wheel0 z\n";
-        wheels[1]->cyl->getBodyPosition(xb, yb, zb);
-        std::cout << zb << " wheel1 z\n";
-    }
+    // if (getID() == 0) {
+    //     std::cout << zz << '\n';
+    //     dReal xb, yb, zb;
+    //     balls[0]->pBall->getBodyPosition(xb, yb, zb);
+    //     std::cout << zb << " ball0 z\n";
+    //     balls[1]->pBall->getBodyPosition(xb, yb, zb);
+    //     std::cout << zb << " ball1 z\n";
+    //     balls[2]->pBall->getBodyPosition(xb, yb, zb);
+    //     std::cout << zb << " ball2 z\n";
+    //     balls[3]->pBall->getBodyPosition(xb, yb, zb);
+    //     std::cout << zb << " ball3 z\n";
+    //     wheels[0]->cyl->getBodyPosition(xb, yb, zb);
+    //     std::cout << zb << " wheel0 z\n";
+    //     wheels[1]->cyl->getBodyPosition(xb, yb, zb);
+    //     std::cout << zb << " wheel1 z\n";
+    // }
     x = xx;
     y = yy;
 }
