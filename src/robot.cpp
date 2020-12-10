@@ -67,7 +67,7 @@ CRobot::RBall::RBall(CRobot *robot, int _id, dReal ang, dReal ang2)
     id = _id;
     rob = robot;
     dReal rad = rob->cfg->robotSettings.RobotRadius - rob->cfg->robotSettings.BallRadius;
-    rad = sqrt((rad * rad) * 2);
+    rad = sqrt((rad * rad) + (rad * rad));
     ang *= M_PI / 180.0f;
     ang2 *= M_PI / 180.0f;
     dReal x = rob->m_x;
